@@ -1,0 +1,34 @@
+interface User {
+    id: number;
+    username: string;
+    created_at: string;
+}
+
+interface Topic {
+    id: number;
+    title: string;
+    description: string;
+    created_by: number;
+    created_at: string;
+}
+
+interface Post {
+    id: number;
+    title: string;
+    content: string;
+    topic_id: number;
+    user_id: number;
+    created_at: string;
+    updated_at: string;
+}
+
+interface Comment {
+    id: number;
+    content: string;
+    post_id: number;
+    user_id: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export type { User, Topic, Post, Comment };

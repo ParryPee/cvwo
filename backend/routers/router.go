@@ -1,0 +1,63 @@
+package routers
+
+import (
+	"backend/handlers"
+	"backend/middleware"
+	"database/sql"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
+func SetupRouter(db *sql.DB, jwtkey []byte) http.Handler {
+	r := mux.NewRouter()
+
+	topicsHandler := &handlers.TopicHandler{DB: db}
+	postHandler := &handlers.PostHandler{DB: db}
+	commentHandler := &handlers.CommentHandler{DB: db}
+	userHandler := &handlers.UserHandler{DB: db, JWTKey: jwtkey}
+	authMiddleware := &middleware.AuthMiddleware{JWTKey: jwtkey}
+
+	//Public routes
+
+	//User routes
+	r.HandleFunc("/api/users/login", userHandler.Login).Methods("POST")     // User login
+	r.HandleFunc("/api/users/register", userHandler.Create).Methods("POST") // Create new user
+	r.HandleFunc("/api/users/logout", userHandler.Logout).Methods("POST")   // User logout
+
+	//Topic routes
+	r.HandleFunc("/api/topics", topicsHandler.GetAllTopics).Methods("GET")   // Get all topics
+	r.HandleFunc("/api/topics/{topic_id}", topicsHandler.Get).Methods("GET") // Get topic by ID
+	//Comment routes
+	r.HandleFunc("/api/posts/{post_id}/comments", commentHandler.GetAllPostComments).Methods("GET") // Get all comments for a post
+	r.HandleFunc("/api/comments/{comment_id}", commentHandler.GetCommentByID).Methods("GET")        // Get comment by ID
+	// Post routes
+	r.HandleFunc("/api/topics/{topic_id}/posts", postHandler.GetAllTopicPosts).Methods("GET") // Get all posts for a topic
+	r.HandleFunc("/api/posts/{post_id}", postHandler.GetPostByID).Methods("GET")              // Get Post by ID
+
+	//Protected routes
+
+	protected := r.PathPrefix("/api").Subrouter()
+	protected.Use(authMiddleware.ValidateToken)
+
+	// User routes
+	protected.HandleFunc("/users", userHandler.Delete).Methods("DELETE") // Delete user
+	protected.HandleFunc("/users/me", userHandler.GetMe).Methods("GET")  // Get current user info
+
+	//Topic routes
+	protected.HandleFunc("/topics", topicsHandler.CreateTopic).Methods("POST")              // Create new topic
+	protected.HandleFunc("/topics/{topic_id}", topicsHandler.DeleteTopic).Methods("DELETE") // Delete topic by ID
+	protected.HandleFunc("/topics/{topic_id}", topicsHandler.UpdateTopic).Methods("PUT")    // Update topic by ID
+
+	//Comment routes
+	protected.HandleFunc("/comments", commentHandler.Create).Methods("POST")                // Create new comment
+	protected.HandleFunc("/comments/{comment_id}", commentHandler.Delete).Methods("DELETE") // Delete comment by ID
+	protected.HandleFunc("/comments/{comment_id}", commentHandler.Update).Methods("PUT")    // Update comment by ID
+
+	// Post routes
+	protected.HandleFunc("/posts/{post_id}", postHandler.Delete).Methods("DELETE") // Delete post by ID
+	protected.HandleFunc("/posts", postHandler.Create).Methods("POST")             //Create a new post
+	protected.HandleFunc("/posts", postHandler.Update).Methods("PUT")              // Update a post by ID
+
+	return r
+}

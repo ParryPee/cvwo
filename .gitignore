@@ -1,0 +1,110 @@
+# Root .gitignore for cvwo repository
+
+
+########################
+# OS / Editor files
+########################
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Vim swap files, backups
+*~
+*.swp
+
+########################
+# Node / Frontend
+########################
+# Node modules
+node_modules/
+frontend-new/node_modules/
+
+# Vite / build outputs
+/dist/
+/build/
+/frontend-new/dist/
+/frontend-new/build/
+
+# Vite cache
+.vite/
+.vite
+
+# parcel / next / other caches
+.parcel-cache/
+.next/
+.out/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# npm / pnpm debug
+.pnpm-debug.log
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage
+coverage/
+coverage.out
+nyc_output/
+
+# Misc caches
+.cache/
+.eslintcache
+
+########################
+# Go / Backend
+########################
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binaries
+*.test
+
+# Build outputs and packages
+bin/
+pkg/
+vendor/
+
+# GoLand/IDE caches
+.idea/
+
+########################
+# Env / secrets
+########################
+# Common env files (do not commit secrets)
+.env
+.env.local
+.env.*.local
+
+# Explicit repo-local envs (backend/frontend)
+backend/.env
+frontend-new/.env
+
+########################
+# IDEs & tooling
+########################
+.vscode/
+.idea/
+*.iml
+
+########################
+# Other
+########################
+# macOS Finder
+.AppleDouble
+
+# Windows shortcuts
+*.lnk
+
+# Lockfiles are typically committed; do not ignore package-lock.json or pnpm-lock.yaml by default
+# If you want to ignore lockfiles uncomment the following lines
+# package-lock.json
+# pnpm-lock.yaml

@@ -1,0 +1,129 @@
+package handlers
+
+import (
+	"backend/models"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
+)
+
+type CommentHandler struct {
+	DB *sql.DB
+}
+
+func (m *CommentHandler) GetAllPostComments(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	postID := vars["post_id"]
+	if postID == "" {
+		http.Error(w, "Missing post_id parameter", http.StatusBadRequest)
+		return
+	}
+	CommentDB := models.CommentDB{DB: m.DB}
+	postIDInt, err := strconv.ParseInt(postID, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid post_id parameter", http.StatusBadRequest)
+		return
+	}
+	comments, err := CommentDB.AllByPostID(postIDInt)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error fetching comments: %v", err), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(comments)
+}
+func (m *CommentHandler) Create(w http.ResponseWriter, r *http.Request) {
+	var reqBody struct {
+		PostID    int64  `json:"post_id"`
+		UserID    int64  `json:"user_id"`
+		Content   string `json:"content"`
+		CreatedBy int64  `json:"created_by"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+	CommentDB := models.CommentDB{DB: m.DB}
+	commentID, err := CommentDB.Create(reqBody.PostID, reqBody.UserID, reqBody.Content)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error creating comment: %v", err), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]int64{"id": commentID})
+}
+func (m *CommentHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	commentID := vars["comment_id"]
+	if commentID == "" {
+		http.Error(w, "Missing comment_id parameter", http.StatusBadRequest)
+		return
+	}
+	commentIDInt, err := strconv.ParseInt(commentID, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid comment_id parameter", http.StatusBadRequest)
+		return
+	}
+	CommentDB := models.CommentDB{DB: m.DB}
+	if err := CommentDB.Delete(commentIDInt); err != nil {
+		http.Error(w, fmt.Sprintf("Error deleting comment: %v", err), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+func (m *CommentHandler) Update(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	commentID := vars["comment_id"]
+	if commentID == "" {
+		http.Error(w, "Missing comment_id parameter", http.StatusBadRequest)
+		return
+	}
+	commentIDInt, err := strconv.ParseInt(commentID, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid comment_id parameter", http.StatusBadRequest)
+		return
+	}
+	var reqBody struct {
+		Content string `json:"content"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+	CommentDB := models.CommentDB{DB: m.DB}
+	if err := CommentDB.Update(commentIDInt, reqBody.Content); err != nil {
+		http.Error(w, fmt.Sprintf("Error updating comment: %v", err), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+func (m *CommentHandler) GetCommentByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	commentID := vars["comment_id"]
+	if commentID == "" {
+		http.Error(w, "Missing comment_id parameter", http.StatusBadRequest)
+		return
+	}
+	commentIDInt, err := strconv.ParseInt(commentID, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid comment_id parameter", http.StatusBadRequest)
+		return
+	}
+	CommentDB := models.CommentDB{DB: m.DB}
+	comment, err := CommentDB.GetByID(commentIDInt)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error fetching comment: %v", err), http.StatusInternalServerError)
+		return
+	}
+	if comment == nil {
+		http.Error(w, "Comment not found", http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(comment)
+}
