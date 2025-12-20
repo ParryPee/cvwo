@@ -17,31 +17,16 @@ type Comment struct {
 	PostID int64 `json:"post_id"`
 
 	UserID int64 `json:"user_id"`
+
+	CreatedByUsername string `json:"created_by_username"`
 }
 
 type CommentDB struct {
 	DB *sql.DB
 }
 
-func (m *CommentDB) All() ([]Comment, error) {
-	rows, err := m.DB.Query("SELECT id, content, created_at, updated_at, post_id, user_id FROM comments")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var comments []Comment
-	for rows.Next() {
-		var c Comment
-		if err := rows.Scan(&c.ID, &c.Content, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID); err != nil {
-			return nil, err
-		}
-		comments = append(comments, c)
-	}
-	return comments, nil
-}
-
 func (m *CommentDB) AllByPostID(postID int64) ([]Comment, error) {
-	rows, err := m.DB.Query("SELECT id, content, created_at, updated_at, post_id, user_id FROM comments WHERE post_id = ?", postID)
+	rows, err := m.DB.Query("SELECT c.id, c.content, c.created_at, c.updated_at, c.post_id, c.user_id, u.username FROM comments c join users u on c.user_id = u.id WHERE c.post_id = ?", postID)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +34,7 @@ func (m *CommentDB) AllByPostID(postID int64) ([]Comment, error) {
 	var comments []Comment
 	for rows.Next() {
 		var c Comment
-		if err := rows.Scan(&c.ID, &c.Content, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID); err != nil {
+		if err := rows.Scan(&c.ID, &c.Content, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID, &c.CreatedByUsername); err != nil {
 			return nil, err
 		}
 		comments = append(comments, c)

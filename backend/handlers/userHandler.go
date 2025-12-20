@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/gorilla/mux"
 )
 
 type UserHandler struct {
@@ -83,7 +84,6 @@ func (m *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	} else {
 		userID = user.ID
 	}
-
 	expirationTime := time.Now().Add(24 * time.Hour) // Token valid for 24 hours
 	claims := &Claims{
 		UserID: userID,
@@ -104,6 +104,12 @@ func (m *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		HttpOnly: true,
 	})
+	w.Header().Set("Content-Type", "application/json")
+	// Use the user object you fetched earlier
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		http.Error(w, "Error encoding response", http.StatusInternalServerError)
+		return
+	}
 }
 func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	userID, ok := getUserIDFromContext(r.Context())
@@ -133,4 +139,26 @@ func (m *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	})
 	w.WriteHeader(http.StatusNoContent)
 	w.Write([]byte("Logged out successfully"))
+}
+func (m *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userIDParam := vars["user_id"]
+	var uid int64
+	_, err := fmt.Sscanf(userIDParam, "%d", &uid)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+	UserDB := models.UserDB{DB: m.DB}
+	user, err := UserDB.GetByID(uid)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error fetching user: %v", err), http.StatusInternalServerError)
+		return
+	}
+	if user == nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }

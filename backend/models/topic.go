@@ -14,6 +14,8 @@ type Topic struct {
 	CreatedAt time.Time `json:"created_at"`
 
 	CreatedBy int64 `json:"created_by"`
+	// Denormalized convenience field for the creator's username
+	CreatedByUsername string `json:"created_by_username"`
 }
 
 type TopicDB struct {
@@ -21,7 +23,10 @@ type TopicDB struct {
 }
 
 func (m *TopicDB) All() ([]Topic, error) {
-	rows, err := m.DB.Query("SELECT * FROM topics")
+	rows, err := m.DB.Query(`
+		SELECT t.id, t.title, t.description, t.created_at, t.created_by, u.username
+		FROM topics t
+		JOIN users u ON t.created_by = u.id`)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +34,7 @@ func (m *TopicDB) All() ([]Topic, error) {
 	var topics []Topic
 	for rows.Next() {
 		var t Topic
-		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.CreatedBy); err != nil {
+		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.CreatedBy, &t.CreatedByUsername); err != nil {
 			return nil, err
 		}
 		topics = append(topics, t)
@@ -38,9 +43,13 @@ func (m *TopicDB) All() ([]Topic, error) {
 	return topics, nil
 }
 func (m *TopicDB) GetByID(topicID int64) (*Topic, error) {
-	row := m.DB.QueryRow("SELECT * FROM topics WHERE id = ?", topicID)
+	row := m.DB.QueryRow(`
+		SELECT t.id, t.title, t.description, t.created_at, t.created_by, u.username
+		FROM topics t
+		JOIN users u ON t.created_by = u.id
+		WHERE t.id = ?`, topicID)
 	var t Topic
-	if err := row.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.CreatedBy); err != nil {
+	if err := row.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.CreatedBy, &t.CreatedByUsername); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}

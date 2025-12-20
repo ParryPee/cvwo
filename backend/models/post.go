@@ -18,32 +18,16 @@ type Post struct {
 	TopicID int64 `json:"topic_id"`
 
 	UserID int64 `json:"user_id"`
+
+	CreatedByUsername string `json:"created_by_username"`
 }
 
 type PostDB struct {
 	DB *sql.DB
 }
 
-func (m *PostDB) All() ([]Post, error) {
-	rows, err := m.DB.Query("SELECT id, title, content, created_at, updated_at, topic_id, user_id FROM posts")
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var posts []Post
-	for rows.Next() {
-		var p Post
-		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.CreatedAt, &p.UpdatedAt, &p.TopicID, &p.UserID); err != nil {
-			return nil, err
-		}
-		posts = append(posts, p)
-	}
-
-	return posts, nil
-}
-
 func (m *PostDB) AllByTopicID(topicID int64) ([]Post, error) {
-	rows, err := m.DB.Query("SELECT id, title, content, created_at, updated_at, topic_id, user_id FROM posts WHERE topic_id = ?", topicID)
+	rows, err := m.DB.Query("SELECT p.id, p.title, p.content, p.created_at, p.updated_at, p.topic_id, p.user_id, u.username FROM posts p join users u on p.user_id = u.id WHERE p.topic_id = ?", topicID)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +35,7 @@ func (m *PostDB) AllByTopicID(topicID int64) ([]Post, error) {
 	var posts []Post
 	for rows.Next() {
 		var p Post
-		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.CreatedAt, &p.UpdatedAt, &p.TopicID, &p.UserID); err != nil {
+		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.CreatedAt, &p.UpdatedAt, &p.TopicID, &p.UserID, &p.CreatedByUsername); err != nil {
 			return nil, err
 		}
 		posts = append(posts, p)
@@ -70,9 +54,10 @@ func (m *PostDB) Delete(postID int64) error {
 	return err
 }
 func (m *PostDB) GetByID(postID int64) (*Post, error) {
-	row := m.DB.QueryRow("SELECT * FROM posts WHERE id = ?", postID)
+	row := m.DB.QueryRow("SELECT p.id, p.title, p.content, p.created_at, p.updated_at, p.topic_id, p.user_id, u.username FROM posts p join users u on p.user_id = u.id WHERE p.id = ?",
+		postID)
 	var p Post
-	if err := row.Scan(&p.ID, &p.Title, &p.Content, &p.CreatedAt, &p.UpdatedAt, &p.TopicID, &p.UserID); err != nil {
+	if err := row.Scan(&p.ID, &p.Title, &p.Content, &p.CreatedAt, &p.UpdatedAt, &p.TopicID, &p.UserID, &p.CreatedByUsername); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
