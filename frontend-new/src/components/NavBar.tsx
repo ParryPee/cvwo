@@ -16,7 +16,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 
-const pages = ["Home", "Explore"];
+const pages = ["Home"];
 
 function ResponsiveAppBar() {
 	// 1. Hook into our Auth Context
@@ -109,6 +109,8 @@ function ResponsiveAppBar() {
 							{pages.map((page) => (
 								<MenuItem
 									key={page}
+									component={Link}
+									to="/"
 									onClick={handleCloseNavMenu}
 								>
 									<Typography textAlign="center">
@@ -150,6 +152,8 @@ function ResponsiveAppBar() {
 						{pages.map((page) => (
 							<Button
 								key={page}
+								component={Link}
+								to="/"
 								onClick={handleCloseNavMenu}
 								sx={{ my: 2, color: "white", display: "block" }}
 							>
