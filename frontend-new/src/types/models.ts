@@ -10,6 +10,7 @@ interface Topic {
     description: string;
     created_by: number;
     created_at: string;
+    created_by_username: string;
 }
 
 interface Post {
@@ -20,6 +21,7 @@ interface Post {
     user_id: number;
     created_at: string;
     updated_at: string;
+    created_by_username: string;
 }
 
 interface Comment {
@@ -29,6 +31,7 @@ interface Comment {
     user_id: number;
     created_at: string;
     updated_at: string;
+    created_by_username: string;
 }
 
 export type { User, Topic, Post, Comment };
