@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
 	Container,
@@ -9,6 +9,7 @@ import {
 	Button,
 	Alert,
 	Paper,
+	Link,
 } from "@mui/material";
 
 const LoginPage: React.FC = () => {
@@ -87,6 +88,13 @@ const LoginPage: React.FC = () => {
 							{loading ? "Signing in..." : "Sign In"}
 						</Button>
 					</Box>
+
+					<Typography variant="body2" align="center" sx={{ mt: 2 }}>
+						Don&apos;t have an account?{" "}
+						<Link component={RouterLink} to="/register">
+							Register
+						</Link>
+					</Typography>
 				</Paper>
 			</Box>
 		</Container>
