@@ -42,13 +42,20 @@ func (m *CommentHandler) Create(w http.ResponseWriter, r *http.Request) {
 		UserID    int64  `json:"user_id"`
 		Content   string `json:"content"`
 		CreatedBy int64  `json:"created_by"`
+		ParentID  *int64 `json:"parent_id,omitempty"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 	CommentDB := models.CommentDB{DB: m.DB}
-	commentID, err := CommentDB.Create(reqBody.PostID, reqBody.UserID, reqBody.Content)
+	var parentCommentID sql.NullInt64
+	if reqBody.ParentID != nil {
+		parentCommentID = sql.NullInt64{Int64: *reqBody.ParentID, Valid: true}
+	} else {
+		parentCommentID = sql.NullInt64{Valid: false}
+	}
+	commentID, err := CommentDB.Create(reqBody.PostID, reqBody.UserID, reqBody.Content, parentCommentID)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error creating comment: %v", err), http.StatusInternalServerError)
 		return

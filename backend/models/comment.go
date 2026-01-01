@@ -19,6 +19,8 @@ type Comment struct {
 	UserID int64 `json:"user_id"`
 
 	CreatedByUsername string `json:"created_by_username"`
+
+	ParentCommentID sql.NullInt64 `json:"parent_comment_id,omitempty"`
 }
 
 type CommentDB struct {
@@ -26,7 +28,7 @@ type CommentDB struct {
 }
 
 func (m *CommentDB) AllByPostID(postID int64) ([]Comment, error) {
-	rows, err := m.DB.Query("SELECT c.id, c.content, c.created_at, c.updated_at, c.post_id, c.user_id, u.username FROM comments c join users u on c.user_id = u.id WHERE c.post_id = ?", postID)
+	rows, err := m.DB.Query("SELECT c.id, c.content, c.created_at, c.updated_at, c.post_id, c.user_id, c.parent_id, u.username FROM comments c join users u on c.user_id = u.id WHERE c.post_id = ?", postID)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +36,7 @@ func (m *CommentDB) AllByPostID(postID int64) ([]Comment, error) {
 	var comments []Comment
 	for rows.Next() {
 		var c Comment
-		if err := rows.Scan(&c.ID, &c.Content, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID, &c.CreatedByUsername); err != nil {
+		if err := rows.Scan(&c.ID, &c.Content, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID, &c.ParentCommentID, &c.CreatedByUsername); err != nil {
 			return nil, err
 		}
 		comments = append(comments, c)
@@ -42,9 +44,9 @@ func (m *CommentDB) AllByPostID(postID int64) ([]Comment, error) {
 	return comments, nil
 }
 
-func (m *CommentDB) Create(postID int64, userID int64, content string) (int64, error) {
-	result, err := m.DB.Exec("INSERT INTO comments (content, created_at, updated_at, post_id, user_id) VALUES (?, ?, ?, ?, ?)",
-		content, time.Now(), time.Now(), postID, userID)
+func (m *CommentDB) Create(postID int64, userID int64, content string, parentCommentID sql.NullInt64) (int64, error) {
+	result, err := m.DB.Exec("INSERT INTO comments (content, created_at, updated_at, post_id, user_id, parent_id) VALUES (?, ?, ?, ?, ?, ?)",
+		content, time.Now(), time.Now(), postID, userID, parentCommentID)
 	if err != nil {
 		return 0, err
 	}
@@ -59,14 +61,21 @@ func (m *CommentDB) Update(commentID int64, content string) error {
 	_, err := m.DB.Exec("UPDATE comments SET content = ?, updated_at = ? WHERE id = ?", content, time.Now(), commentID)
 	return err
 }
-func (m *CommentDB) GetByID(commentID int64) (*Comment, error) {
-	row := m.DB.QueryRow("SELECT id, content, created_at, updated_at, post_id, user_id FROM comments WHERE id = ?", commentID)
-	var c Comment
-	if err := row.Scan(&c.ID, &c.Content, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID); err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
+func (m *CommentDB) GetByID(commentID int64) (*[]Comment, error) { // Get all comments under a parent comment
+	rows, err := m.DB.Query("SELECT c.id, c.content, c.created_at, c.updated_at, c.post_id, c.user_id, c.parent_id, u.username FROM comments c join users u on c.user_id = u.id WHERE c.parent_id = ?", commentID)
+
+	if err != nil {
 		return nil, err
 	}
-	return &c, nil
+	defer rows.Close()
+	var comments []Comment
+	for rows.Next() {
+		var c Comment
+		if err := rows.Scan(&c.ID, &c.Content, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID, &c.ParentCommentID, &c.CreatedByUsername); err != nil {
+			return nil, err
+		}
+		comments = append(comments, c)
+	}
+	return &comments, nil
+
 }
