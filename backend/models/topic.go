@@ -13,8 +13,7 @@ type Topic struct {
 
 	CreatedAt time.Time `json:"created_at"`
 
-	CreatedBy int64 `json:"created_by"`
-	// Denormalized convenience field for the creator's username
+	CreatedBy         int64  `json:"created_by"`
 	CreatedByUsername string `json:"created_by_username"`
 }
 
@@ -24,9 +23,9 @@ type TopicDB struct {
 
 func (m *TopicDB) All() ([]Topic, error) {
 	rows, err := m.DB.Query(`
-		SELECT t.id, t.title, t.description, t.created_at, t.created_by, u.username
+		SELECT t.id, t.title, t.description, t.created_at, t.user_id, u.username
 		FROM topics t
-		JOIN users u ON t.created_by = u.id`)
+		JOIN users u ON t.user_id = u.id`)
 	if err != nil {
 		return nil, err
 	}
@@ -44,9 +43,9 @@ func (m *TopicDB) All() ([]Topic, error) {
 }
 func (m *TopicDB) GetByID(topicID int64) (*Topic, error) {
 	row := m.DB.QueryRow(`
-		SELECT t.id, t.title, t.description, t.created_at, t.created_by, u.username
+		SELECT t.id, t.title, t.description, t.created_at, t.user_id, u.username
 		FROM topics t
-		JOIN users u ON t.created_by = u.id
+		JOIN users u ON t.user_id = u.id
 		WHERE t.id = ?`, topicID)
 	var t Topic
 	if err := row.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.CreatedBy, &t.CreatedByUsername); err != nil {
@@ -59,7 +58,7 @@ func (m *TopicDB) GetByID(topicID int64) (*Topic, error) {
 	return &t, nil
 }
 func (m *TopicDB) Create(title, description string, createdBy int64) (int64, error) {
-	result, err := m.DB.Exec("INSERT INTO topics (title, description, created_at, created_by) VALUES (?, ?, ?, ?)", title, description, time.Now(), createdBy)
+	result, err := m.DB.Exec("INSERT INTO topics (title, description, created_at, user_id) VALUES (?, ?, ?, ?)", title, description, time.Now(), createdBy)
 	if err != nil {
 		return 0, err
 	}
