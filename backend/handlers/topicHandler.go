@@ -153,3 +153,20 @@ func (m *TopicHandler) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+func (m *TopicHandler) LikeTopic(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	topicIDParam := vars["topic_id"]
+	var topicID int64
+	_, err := fmt.Sscanf(topicIDParam, "%d", &topicID)
+	if err != nil {
+		http.Error(w, "Invalid topic ID", http.StatusBadRequest)
+		return
+	}
+	TopicDB := models.TopicDB{DB: m.DB}
+	err = TopicDB.LikeTopic(topicID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error liking topic: %v", err), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}

@@ -134,3 +134,22 @@ func (m *CommentHandler) GetCommentByID(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(comment)
 }
+func (m *CommentHandler) LikeComment(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	commentID := vars["comment_id"]
+	if commentID == "" {
+		http.Error(w, "Missing comment_id parameter", http.StatusBadRequest)
+		return
+	}
+	commentIDInt, err := strconv.ParseInt(commentID, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid comment_id parameter", http.StatusBadRequest)
+		return
+	}
+	CommentDB := models.CommentDB{DB: m.DB}
+	if err := CommentDB.LikeComment(commentIDInt); err != nil {
+		http.Error(w, fmt.Sprintf("Error liking comment: %v", err), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}

@@ -79,3 +79,8 @@ func (m *CommentDB) GetByID(commentID int64) (*[]Comment, error) { // Get all co
 	return &comments, nil
 
 }
+
+func (m *CommentDB) LikeComment(commentID int64) error {
+	_, err := m.DB.Exec("UPDATE comments SET likes = likes + 1 WHERE id = ?", commentID)
+	return err
+}

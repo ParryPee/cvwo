@@ -45,14 +45,16 @@ func SetupRouter(db *sql.DB, jwtkey []byte) http.Handler {
 	protected.HandleFunc("/users/me", userHandler.GetMe).Methods("GET")  // Get current user info
 
 	//Topic routes
-	protected.HandleFunc("/topics", topicsHandler.CreateTopic).Methods("POST")              // Create new topic
-	protected.HandleFunc("/topics/{topic_id}", topicsHandler.DeleteTopic).Methods("DELETE") // Delete topic by ID
-	protected.HandleFunc("/topics/{topic_id}", topicsHandler.UpdateTopic).Methods("PUT")    // Update topic by ID
+	protected.HandleFunc("/topics", topicsHandler.CreateTopic).Methods("POST")               // Create new topic
+	protected.HandleFunc("/topics/{topic_id}", topicsHandler.DeleteTopic).Methods("DELETE")  // Delete topic by ID
+	protected.HandleFunc("/topics/{topic_id}", topicsHandler.UpdateTopic).Methods("PUT")     // Update topic by ID
+	protected.HandleFunc("/topics/{topic_id}/like", topicsHandler.LikeTopic).Methods("POST") // Like a topic
 
 	//Comment routes
-	protected.HandleFunc("/comments", commentHandler.Create).Methods("POST")                // Create new comment
-	protected.HandleFunc("/comments/{comment_id}", commentHandler.Delete).Methods("DELETE") // Delete comment by ID
-	protected.HandleFunc("/comments/{comment_id}", commentHandler.Update).Methods("PUT")    // Update comment by ID
+	protected.HandleFunc("/comments", commentHandler.Create).Methods("POST")                        // Create new comment
+	protected.HandleFunc("/comments/{comment_id}", commentHandler.Delete).Methods("DELETE")         // Delete comment by ID
+	protected.HandleFunc("/comments/{comment_id}", commentHandler.Update).Methods("PUT")            // Update comment by ID
+	protected.HandleFunc("/comments/{comment_id}/like", commentHandler.LikeComment).Methods("POST") // Like a comment
 
 	// Post routes
 	protected.HandleFunc("/posts/{post_id}", postHandler.Delete).Methods("DELETE") // Delete post by ID
