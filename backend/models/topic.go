@@ -9,9 +9,9 @@ type Topic struct {
 	ID    int64  `json:"id"`
 	Title string `json:"title"`
 
-	Description string `json:"description"`
-
-	CreatedAt time.Time `json:"created_at"`
+	Description string    `json:"description"`
+	Likes       int       `json:"likes"`
+	CreatedAt   time.Time `json:"created_at"`
 
 	CreatedBy         int64  `json:"created_by"`
 	CreatedByUsername string `json:"created_by_username"`
@@ -33,7 +33,7 @@ func (m *TopicDB) All() ([]Topic, error) {
 	var topics []Topic
 	for rows.Next() {
 		var t Topic
-		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.CreatedBy, &t.CreatedByUsername); err != nil {
+		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.Likes, &t.CreatedAt, &t.CreatedBy, &t.CreatedByUsername); err != nil {
 			return nil, err
 		}
 		topics = append(topics, t)
@@ -48,7 +48,7 @@ func (m *TopicDB) GetByID(topicID int64) (*Topic, error) {
 		JOIN users u ON t.user_id = u.id
 		WHERE t.id = ?`, topicID)
 	var t Topic
-	if err := row.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.CreatedBy, &t.CreatedByUsername); err != nil {
+	if err := row.Scan(&t.ID, &t.Title, &t.Description, &t.Likes, &t.CreatedAt, &t.CreatedBy, &t.CreatedByUsername); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}

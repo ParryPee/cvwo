@@ -8,8 +8,8 @@ import (
 type Comment struct {
 	ID int64 `json:"id"`
 
-	Content string `json:"content"`
-
+	Content   string    `json:"content"`
+	Likes     int       `json:"likes"`
 	CreatedAt time.Time `json:"created_at"`
 
 	UpdatedAt time.Time `json:"updated_at"`
@@ -36,7 +36,7 @@ func (m *CommentDB) AllByPostID(postID int64) ([]Comment, error) {
 	var comments []Comment
 	for rows.Next() {
 		var c Comment
-		if err := rows.Scan(&c.ID, &c.Content, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID, &c.ParentCommentID, &c.CreatedByUsername); err != nil {
+		if err := rows.Scan(&c.ID, &c.Content, &c.Likes, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID, &c.ParentCommentID, &c.CreatedByUsername); err != nil {
 			return nil, err
 		}
 		comments = append(comments, c)
