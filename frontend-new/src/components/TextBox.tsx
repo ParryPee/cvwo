@@ -1,0 +1,47 @@
+import React, { useState } from "react";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import Box from "@mui/material/Box";
+import SendIcon from "@mui/icons-material/Send";
+
+function TextBox(props: { onSubmit: (text: string) => void; label: string }) {
+	const [text, setText] = React.useState("");
+	const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+		setText(event.target.value);
+	};
+
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		props.onSubmit(text);
+		setText("");
+	};
+	return (
+		<Box
+			component="form"
+			onSubmit={handleSubmit}
+			sx={{
+				display: "flex",
+				flexDirection: "row",
+				gap: 2,
+				maxWidth: 800,
+				marginBottom: 2,
+			}}
+		>
+			<TextField
+				label={props.label || "Enter text"}
+				value={text}
+				onChange={handleChange}
+				size="small"
+				sx={{ borderRadius: 2 }}
+			/>
+			<IconButton
+				type="submit"
+				color="primary"
+				sx={{ alignSelf: "flex-start", backgroundColor: "lightblue" }}
+			>
+				<SendIcon />
+			</IconButton>
+		</Box>
+	);
+}
+export default TextBox;
