@@ -156,6 +156,11 @@ func (m *TopicHandler) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 func (m *TopicHandler) LikeTopic(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	topicIDParam := vars["topic_id"]
+	currentUserID, ok := getUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 	var topicID int64
 	_, err := fmt.Sscanf(topicIDParam, "%d", &topicID)
 	if err != nil {
@@ -163,7 +168,7 @@ func (m *TopicHandler) LikeTopic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	TopicDB := models.TopicDB{DB: m.DB}
-	err = TopicDB.LikeTopic(topicID)
+	err = TopicDB.LikeTopic(topicID, currentUserID)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error liking topic: %v", err), http.StatusInternalServerError)
 		return

@@ -31,8 +31,15 @@ export const fetchCommentsByPostId = async (postId: number): Promise<Comment[]> 
     const response = await client.get<Comment[]>(`posts/${postId}/comments`);
     return response.data;
 }
-export const createComment = async (commentData: { post_id: number; content: string; user_id: number }): Promise<Comment> => {
+export const createComment = async (commentData: { post_id: number; content: string; user_id: number; parent_id?: number | null }): Promise<Comment> => {
     const response = await client.post<Comment>('comments', commentData);
     return response.data;
+}
+export const fetchCommentById = async (commentId: number): Promise<Comment> => {
+    const response = await client.get<Comment>(`comments/${commentId}`);
+    return response.data;
+}
+export const likeComment = async (commentId: number): Promise<void> => {
+    await client.post(`comments/${commentId}/like`);
 }
 

@@ -1,18 +1,29 @@
 import { use, useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { fetchPostById, fetchCommentsByPostId } from "../api/forum";
+import {
+	fetchPostById,
+	fetchCommentsByPostId,
+	createComment,
+	likeComment,
+} from "../api/forum";
 import type { Post, Comment } from "../types/models";
 import { useAuth } from "../context/AuthContext";
 import { timeAgo, formatDate } from "../utils/date";
 import Box from "@mui/material/Box";
+import TextBox from "../components/TextBox";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import IconButton from "@mui/material/IconButton";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+
 import {
 	Container,
 	CircularProgress,
 	Typography,
 	Grid,
-	CardActionArea,
+	Card,
 	Alert,
 	Button,
+	Icon,
 } from "@mui/material";
 const TopicPage = () => {
 	const navigate = useNavigate();
@@ -22,7 +33,45 @@ const TopicPage = () => {
 	const [post, setPost] = useState<Post | null>(null);
 	const [comments, setComments] = useState<Comment[]>([]);
 	const [error, setError] = useState<string | null>(null);
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, user } = useAuth();
+
+	const handleSubmit = async (
+		text: string,
+		parentId: number | null = null
+	) => {
+		if (!isAuthenticated || !postId) {
+			navigate("/login");
+			return;
+		}
+		try {
+			const postIdNum = parseInt(postId, 10);
+			if (isNaN(postIdNum)) {
+				setError("Invalid Post ID");
+				return;
+			}
+			await createComment({
+				post_id: postIdNum,
+				content: text,
+				user_id: user!.id,
+				parent_id: parentId,
+			});
+			navigate(0);
+		} catch (error) {
+			console.error("Failed to create comment:", error);
+		}
+	};
+	const handleLike = async (commentId: number) => {
+		if (!isAuthenticated) {
+			navigate("/login");
+			return;
+		}
+		try {
+			await likeComment(commentId);
+			navigate(0);
+		} catch (error) {
+			console.error("Failed to like comment:", error);
+		}
+	};
 	useEffect(() => {
 		const loadPostAndComments = async () => {
 			if (!postId || !topicId) return;
@@ -87,29 +136,12 @@ const TopicPage = () => {
 			</Box>
 
 			<Box mt={4}>
-				<Box
-					sx={{
-						display: "flex",
-						justifyContent: "space-between",
-						alignItems: "center",
-						mb: 2,
-					}}
-				>
-					<Typography variant="h6">Comments</Typography>
-					{isAuthenticated && (
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={() =>
-								navigate(
-									`/topics/${topicId}/posts/${postId}/comments/create`
-								)
-							}
-						>
-							Create Comment
-						</Button>
-					)}
-				</Box>
+				{isAuthenticated && (
+					<TextBox
+						label="Add a comment..."
+						onSubmit={(text) => handleSubmit(text, null)}
+					/>
+				)}
 				{!comments || comments.length === 0 ? (
 					<Typography variant="body2" color="text.secondary" mt={2}>
 						No comments yet. Be the first to comment!
@@ -117,14 +149,15 @@ const TopicPage = () => {
 				) : (
 					comments.map((comment) => (
 						<Grid key={comment.id} size={{ xs: 12, sm: 6 }}>
-							<CardActionArea
+							<Card
 								sx={{
 									border: "1px solid #ddd",
 									borderRadius: "8px",
 									padding: "16px",
 									marginBottom: "16px",
+									position: "relative",
 								}}
-								//Todo: Link to comment detail page, subreplies etc
+								//Todo: subreplies etc
 							>
 								<Typography
 									variant="body1"
@@ -146,8 +179,42 @@ const TopicPage = () => {
 									{timeAgo(comment.created_at)} (on{" "}
 									{formatDate(comment.created_at)})
 								</Typography>
+								<Box>
+									<Typography
+										variant="caption"
+										sx={{ marginTop: 2 }}
+									>
+										{comment.likes || 0} Likes
+									</Typography>
+								</Box>
+								{isAuthenticated && (
+									<IconButton
+										sx={{
+											position: "absolute",
+											top: 8,
+											right: 8,
+										}}
+										onClick={() => handleLike(comment.id)}
+									>
+										{comment.liked_by_user ? (
+											<FavoriteIcon
+												sx={{
+													cursor: "pointer",
+													":hover": { color: "red" },
+												}}
+											/>
+										) : (
+											<FavoriteBorderIcon
+												sx={{
+													cursor: "pointer",
+													":hover": { color: "red" },
+												}}
+											/>
+										)}
+									</IconButton>
+								)}
 								<Box my={2} />
-							</CardActionArea>
+							</Card>
 						</Grid>
 					))
 				)}

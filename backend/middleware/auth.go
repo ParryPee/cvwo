@@ -21,30 +21,48 @@ type contextKey string
 
 const UserIDKey contextKey = "UserID"
 
+func (m *AuthMiddleware) parseUserClaims(r *http.Request) (*Claims, error) {
+	cookie, err := r.Cookie("token")
+	var tokenString string
+
+	if err == nil {
+		tokenString = cookie.Value
+	} else {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			return nil, http.ErrNoCookie
+		}
+		tokenString = strings.TrimPrefix(authHeader, "Bearer ")
+	}
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return m.JWTKey, nil // Use the key stored in the struct
+	})
+	if err != nil || !token.Valid {
+		return nil, err
+	}
+	return claims, nil
+}
+
 func (m *AuthMiddleware) ValidateToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("token")
-		var tokenString string
-
-		if err == nil {
-			tokenString = cookie.Value
-		} else {
-			authHeader := r.Header.Get("Authorization")
-			if authHeader == "" {
-				http.Error(w, "Authorization header missing", http.StatusUnauthorized)
-				return
-			}
-			tokenString = strings.TrimPrefix(authHeader, "Bearer ")
-		}
-		claims := &Claims{}
-		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return m.JWTKey, nil // Use the key stored in the struct
-		})
-		if err != nil || !token.Valid {
-			http.Error(w, "Invalid Token", http.StatusUnauthorized)
+		claims, err := m.parseUserClaims(r)
+		if err != nil {
+			http.Error(w, "Unauthorised", http.StatusUnauthorized)
 			return
 		}
 		userID := claims.UserID
+		ctx := context.WithValue(r.Context(), UserIDKey, userID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+func (m *AuthMiddleware) OptionalAuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		claims, err := m.parseUserClaims(r)
+		var userID int64 = 0
+		if err == nil {
+			userID = claims.UserID
+		}
 		ctx := context.WithValue(r.Context(), UserIDKey, userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

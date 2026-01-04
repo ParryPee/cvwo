@@ -72,7 +72,37 @@ func (m *TopicDB) Update(topicID int64, title, description string) error {
 	_, err := m.DB.Exec("UPDATE topics SET title = ?, description = ? WHERE id = ?", title, description, topicID)
 	return err
 }
-func (m *TopicDB) LikeTopic(topicID int64) error {
-	_, err := m.DB.Exec("UPDATE topics SET likes = likes + 1 WHERE id = ?", topicID)
-	return err
+func (m *TopicDB) LikeTopic(topicID, userID int64) error {
+	tx, err := m.DB.Begin() // Start a transaction, allows us to ensure both operations succeed or fail together
+	if err != nil {
+		return err
+	}
+	var exists bool
+	err = tx.QueryRow("SELECT EXISTS(SELECT 1 FROM topic_likes WHERE topic_id = ? AND user_id = ?)", topicID, userID).Scan(&exists)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	if exists { // User has already liked the topic, so we remove the like
+		_, err = tx.Exec("DELETE from topic_likes WHERE topic_id = ? AND user_id = ?", topicID, userID)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		_, err = tx.Exec("UPDATE topics SET likes = likes - 1 WHERE id = ?", topicID)
+	} else {
+		_, err = tx.Exec("INSERT INTO topic_likes (topic_id, user_id) VALUES (?, ?)", topicID, userID)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		_, err = tx.Exec("UPDATE topics SET likes = likes + 1 WHERE id = ?", topicID)
+
+	}
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit()
+
 }

@@ -32,7 +32,9 @@ const LoginPage: React.FC = () => {
 			navigate("/");
 		} catch (err) {
 			console.error(err);
-			setError("Failed to log in. Please try again.");
+			setError(
+				"Failed to log in. Please try again. Please check your username."
+			);
 		} finally {
 			setLoading(false);
 		}

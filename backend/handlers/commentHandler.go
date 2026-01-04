@@ -22,13 +22,17 @@ func (m *CommentHandler) GetAllPostComments(w http.ResponseWriter, r *http.Reque
 		http.Error(w, "Missing post_id parameter", http.StatusBadRequest)
 		return
 	}
+	currentUserID, ok := getUserIDFromContext(r.Context())
+	if !ok {
+		currentUserID = 0
+	}
 	CommentDB := models.CommentDB{DB: m.DB}
 	postIDInt, err := strconv.ParseInt(postID, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid post_id parameter", http.StatusBadRequest)
 		return
 	}
-	comments, err := CommentDB.AllByPostID(postIDInt)
+	comments, err := CommentDB.AllByPostID(postIDInt, currentUserID)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error fetching comments: %v", err), http.StatusInternalServerError)
 		return
@@ -141,13 +145,18 @@ func (m *CommentHandler) LikeComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing comment_id parameter", http.StatusBadRequest)
 		return
 	}
+	currentUserID, ok := getUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 	commentIDInt, err := strconv.ParseInt(commentID, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid comment_id parameter", http.StatusBadRequest)
 		return
 	}
 	CommentDB := models.CommentDB{DB: m.DB}
-	if err := CommentDB.LikeComment(commentIDInt); err != nil {
+	if err := CommentDB.LikeComment(commentIDInt, currentUserID); err != nil {
 		http.Error(w, fmt.Sprintf("Error liking comment: %v", err), http.StatusInternalServerError)
 		return
 	}

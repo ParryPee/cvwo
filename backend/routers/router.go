@@ -25,18 +25,21 @@ func SetupRouter(db *sql.DB, jwtkey []byte) http.Handler {
 	r.HandleFunc("/api/users/register", userHandler.Create).Methods("POST") // Create new user
 	r.HandleFunc("/api/users/logout", userHandler.Logout).Methods("POST")   // User logout
 
+	// Public routes that can optionally read user context
+	optionalAuth := r.PathPrefix("/api").Subrouter()
+	optionalAuth.Use(authMiddleware.OptionalAuthMiddleware)
+
 	//Topic routes
-	r.HandleFunc("/api/topics", topicsHandler.GetAllTopics).Methods("GET")   // Get all topics
-	r.HandleFunc("/api/topics/{topic_id}", topicsHandler.Get).Methods("GET") // Get topic by ID
+	optionalAuth.HandleFunc("/topics", topicsHandler.GetAllTopics).Methods("GET")   // Get all topics
+	optionalAuth.HandleFunc("/topics/{topic_id}", topicsHandler.Get).Methods("GET") // Get topic by ID
 	//Comment routes
-	r.HandleFunc("/api/posts/{post_id}/comments", commentHandler.GetAllPostComments).Methods("GET") // Get all comments for a post
-	r.HandleFunc("/api/comments/{comment_id}", commentHandler.GetCommentByID).Methods("GET")        // Get comment by ID
+	optionalAuth.HandleFunc("/posts/{post_id}/comments", commentHandler.GetAllPostComments).Methods("GET") // Get all comments for a post
+	optionalAuth.HandleFunc("/comments/{comment_id}", commentHandler.GetCommentByID).Methods("GET")        // Get comment by ID
 	// Post routes
-	r.HandleFunc("/api/topics/{topic_id}/posts", postHandler.GetAllTopicPosts).Methods("GET") // Get all posts for a topic
-	r.HandleFunc("/api/posts/{post_id}", postHandler.GetPostByID).Methods("GET")              // Get Post by ID
+	optionalAuth.HandleFunc("/topics/{topic_id}/posts", postHandler.GetAllTopicPosts).Methods("GET") // Get all posts for a topic
+	optionalAuth.HandleFunc("/posts/{post_id}", postHandler.GetPostByID).Methods("GET")              // Get Post by ID
 
 	//Protected routes
-
 	protected := r.PathPrefix("/api").Subrouter()
 	protected.Use(authMiddleware.ValidateToken)
 

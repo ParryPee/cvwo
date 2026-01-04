@@ -72,11 +72,11 @@ const HomePage = () => {
 							color="primary"
 							onClick={() => navigate(`/topics/create`)}
 						>
-							Create Post
+							Create Topic
 						</Button>
 					)}
 				</Box>
-				{topics.length === 0 ? (
+				{!topics || topics.length === 0 ? (
 					<Box
 						sx={{
 							textAlign: "center",
