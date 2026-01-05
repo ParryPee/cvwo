@@ -112,3 +112,26 @@ func (m *PostDB) LikePost(postID, userID int64) error {
 	return tx.Commit()
 
 }
+func (m *PostDB) SearchPost(query string) ([]Post, error) {
+	sql_qry := `SELECT p.id, p.title, p.content, p.created_at, p.updated_at, p.topic_id, p.user_id,
+	u.username FROM posts p JOIN users u ON p.id = u.id
+	WHERE MATCH(p.title,p.content) AGAINST (? IN NATURAL LANGUAGE MODE)
+	ORDER BY p.created_at DESC
+	`
+
+	rows, err := m.DB.Query(sql_qry, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var posts []Post
+	for rows.Next() {
+		var p Post
+		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.CreatedAt,
+			&p.UpdatedAt, &p.TopicID, &p.UserID, &p.CreatedByUsername); err != nil {
+			return nil, err
+		}
+		posts = append(posts, p)
+	}
+	return posts, nil
+}
