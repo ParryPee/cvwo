@@ -19,9 +19,11 @@ interface Post {
     content: string;
     topic_id: number;
     user_id: number;
+    likes: number;
     created_at: string;
     updated_at: string;
     created_by_username: string;
+    liked_by_user: boolean;
 }
 
 interface Comment {

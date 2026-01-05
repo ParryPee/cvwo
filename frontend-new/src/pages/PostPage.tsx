@@ -5,6 +5,7 @@ import {
 	fetchCommentsByPostId,
 	createComment,
 	likeComment,
+	likePost,
 } from "../api/forum";
 import type { Post, Comment } from "../types/models";
 import { useAuth } from "../context/AuthContext";
@@ -60,7 +61,7 @@ const TopicPage = () => {
 			console.error("Failed to create comment:", error);
 		}
 	};
-	const handleLike = async (commentId: number) => {
+	const handleCommentLike = async (commentId: number) => {
 		if (!isAuthenticated) {
 			navigate("/login");
 			return;
@@ -70,6 +71,20 @@ const TopicPage = () => {
 			navigate(0);
 		} catch (error) {
 			console.error("Failed to like comment:", error);
+		}
+	};
+	const handlePostLike = async () => {
+		if (!isAuthenticated || !postId) {
+			navigate("/login");
+			return;
+		}
+		try {
+			const postIdNum = parseInt(postId, 10);
+
+			await likePost(postIdNum);
+			navigate(0);
+		} catch (error) {
+			console.error("failed to like post", error);
 		}
 	};
 	useEffect(() => {
@@ -133,6 +148,37 @@ const TopicPage = () => {
 				>
 					{post.content}
 				</Typography>
+				<Box
+					sx={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+						marginTop: 2,
+					}}
+				>
+					<Typography variant="caption">
+						{post.likes || 0} Likes
+					</Typography>
+					{isAuthenticated && (
+						<IconButton onClick={() => handlePostLike()}>
+							{post.liked_by_user ? (
+								<FavoriteIcon
+									sx={{
+										cursor: "pointer",
+										":hover": { color: "red" },
+									}}
+								/>
+							) : (
+								<FavoriteBorderIcon
+									sx={{
+										cursor: "pointer",
+										":hover": { color: "red" },
+									}}
+								/>
+							)}
+						</IconButton>
+					)}
+				</Box>
 			</Box>
 
 			<Box mt={4}>
@@ -194,7 +240,9 @@ const TopicPage = () => {
 											top: 8,
 											right: 8,
 										}}
-										onClick={() => handleLike(comment.id)}
+										onClick={() =>
+											handleCommentLike(comment.id)
+										}
 									>
 										{comment.liked_by_user ? (
 											<FavoriteIcon

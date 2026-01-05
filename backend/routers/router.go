@@ -48,10 +48,9 @@ func SetupRouter(db *sql.DB, jwtkey []byte) http.Handler {
 	protected.HandleFunc("/users/me", userHandler.GetMe).Methods("GET")  // Get current user info
 
 	//Topic routes
-	protected.HandleFunc("/topics", topicsHandler.CreateTopic).Methods("POST")               // Create new topic
-	protected.HandleFunc("/topics/{topic_id}", topicsHandler.DeleteTopic).Methods("DELETE")  // Delete topic by ID
-	protected.HandleFunc("/topics/{topic_id}", topicsHandler.UpdateTopic).Methods("PUT")     // Update topic by ID
-	protected.HandleFunc("/topics/{topic_id}/like", topicsHandler.LikeTopic).Methods("POST") // Like a topic
+	protected.HandleFunc("/topics", topicsHandler.CreateTopic).Methods("POST")              // Create new topic
+	protected.HandleFunc("/topics/{topic_id}", topicsHandler.DeleteTopic).Methods("DELETE") // Delete topic by ID
+	protected.HandleFunc("/topics/{topic_id}", topicsHandler.UpdateTopic).Methods("PUT")    // Update topic by ID
 
 	//Comment routes
 	protected.HandleFunc("/comments", commentHandler.Create).Methods("POST")                        // Create new comment
@@ -63,6 +62,7 @@ func SetupRouter(db *sql.DB, jwtkey []byte) http.Handler {
 	protected.HandleFunc("/posts/{post_id}", postHandler.Delete).Methods("DELETE") // Delete post by ID
 	protected.HandleFunc("/posts", postHandler.Create).Methods("POST")             //Create a new post
 	protected.HandleFunc("/posts", postHandler.Update).Methods("PUT")              // Update a post by ID
+	protected.HandleFunc("/posts/{post_id}/like", postHandler.LikePost).Methods("POST")
 
 	return r
 }

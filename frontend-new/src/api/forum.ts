@@ -42,4 +42,7 @@ export const fetchCommentById = async (commentId: number): Promise<Comment> => {
 export const likeComment = async (commentId: number): Promise<void> => {
     await client.post(`comments/${commentId}/like`);
 }
+export const likePost = async (postId: number): Promise<void> =>{
+    await client.post(`posts/${postId}/like`);
+}
 

@@ -70,13 +70,17 @@ func (m *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing post_id parameter", http.StatusBadRequest)
 		return
 	}
+	currentUserID, ok := getUserIDFromContext(r.Context())
+	if !ok {
+		currentUserID = 0
+	}
 	PostDB := models.PostDB{DB: m.DB}
 	postIDInt, err := strconv.ParseInt(postID, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid post_id parameter", http.StatusBadRequest)
 		return
 	}
-	post, err := PostDB.GetByID(postIDInt)
+	post, err := PostDB.GetByID(postIDInt, currentUserID)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error fetching post: %v", err), http.StatusInternalServerError)
 		return
@@ -109,7 +113,7 @@ func (m *PostHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Post ID", http.StatusBadRequest)
 		return
 	}
-	post, err := PostDB.GetByID(postIDInt)
+	post, err := PostDB.GetByID(postIDInt, currentUserID)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error fetching post: %v", err), http.StatusInternalServerError)
 		return
@@ -163,7 +167,7 @@ func (m *PostHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, err := PostDB.GetByID(postIDInt)
+	post, err := PostDB.GetByID(postIDInt, currentUserID)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error fetching post: %v", err), http.StatusInternalServerError)
 		return
@@ -179,6 +183,30 @@ func (m *PostHandler) Update(w http.ResponseWriter, r *http.Request) {
 	res := PostDB.Update(postIDInt, reqBody.Content)
 	if res != nil {
 		http.Error(w, "Error updating post", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+func (m *PostHandler) LikePost(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	postID := vars["post_id"]
+	if postID == "" {
+		http.Error(w, "Missing post_id parameter", http.StatusBadRequest)
+		return
+	}
+	currentUserID, ok := getUserIDFromContext(r.Context())
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	postIDInt, err := strconv.ParseInt(postID, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid comment_id parameter", http.StatusBadRequest)
+		return
+	}
+	PostDB := models.PostDB{DB: m.DB}
+	if err := PostDB.LikePost(postIDInt, currentUserID); err != nil {
+		http.Error(w, fmt.Sprintf("Error liking comment: %v", err), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
