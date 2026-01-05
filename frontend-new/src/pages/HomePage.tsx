@@ -1,42 +1,55 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { fetchAllTopics } from "../api/forum";
-import type { Topic } from "../types/models";
-import { timeAgo, formatDate } from "../utils/date";
+import {
+	useNavigate,
+	Link as RouterLink,
+	useSearchParams,
+} from "react-router-dom";
+import { fetchAllTopics, searchPost } from "../api/forum"; // Import both
+import type { Topic, Post } from "../types/models";
+import { timeAgo } from "../utils/date";
 import Box from "@mui/material/Box";
 import {
 	Container,
 	CircularProgress,
 	Typography,
 	Grid,
-	Card,
-	Button,
 	CardActionArea,
 	Fade,
+	Button,
 } from "@mui/material";
-import { Link, Padding } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 
 const HomePage = () => {
 	const navigate = useNavigate();
+
+	const [searchParams] = useSearchParams();
+	const query = searchParams.get("q");
+
 	const [topics, setTopics] = useState<Topic[]>([]);
+	const [searchResults, setSearchResults] = useState<Post[]>([]);
 	const [loading, setLoading] = useState(true);
 	const { isAuthenticated, user } = useAuth();
 
 	useEffect(() => {
-		const loadTopics = async () => {
+		const loadData = async () => {
+			setLoading(true);
 			try {
-				const data = await fetchAllTopics();
-				setTopics(data);
+				if (query) {
+					const data = await searchPost(query);
+					setSearchResults(data);
+				} else {
+					const data = await fetchAllTopics();
+					setTopics(data);
+				}
 			} catch (error) {
-				console.error("Failed to fetch topics:", error);
+				console.error("Failed to fetch data:", error);
 			} finally {
 				setLoading(false);
 			}
 		};
 
-		loadTopics();
-	}, []);
+		loadData();
+	}, [query]);
 
 	if (loading) {
 		return (
@@ -64,19 +77,100 @@ const HomePage = () => {
 					}}
 				>
 					<Typography variant="h4" gutterBottom sx={{ mb: 0 }}>
-						Home Page
+						{query ? `Results for : ${query}` : "Home Page"}
 					</Typography>
-					{isAuthenticated && (
+					{query ? (
 						<Button
 							variant="contained"
-							color="primary"
-							onClick={() => navigate(`/topics/create`)}
+							onClick={() => navigate("/")}
 						>
-							Create Topic
+							Back to Home
 						</Button>
+					) : (
+						isAuthenticated && (
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={() => navigate(`/topics/create`)}
+							>
+								Create Topic
+							</Button>
+						)
 					)}
 				</Box>
-				{!topics || topics.length === 0 ? (
+				{query ? (
+					<Grid container spacing={2} sx={{ padding: "16px" }}>
+						{!searchResults || searchResults.length === 0 ? (
+							<Box
+								sx={{
+									textAlign: "center",
+									padding: "48px 16px",
+								}}
+							>
+								<Typography variant="h6" color="text.secondary">
+									No results for "{query}"
+								</Typography>
+							</Box>
+						) : (
+							searchResults.map((result, index) => (
+								<Fade
+									key={result.id}
+									in={true}
+									timeout={800}
+									style={{
+										transitionDelay: `${index * 150}ms`,
+									}}
+								>
+									<Grid size={{ xs: 12, sm: 6 }}>
+										<CardActionArea
+											sx={{
+												padding: "16px",
+												border: "1px solid #ddd",
+												borderRadius: "8px",
+												display: "block",
+											}}
+											component={RouterLink}
+											to={`/topics/${result.topic_id}/posts/${result.id}`}
+										>
+											<Typography
+												variant="h6"
+												component="h3"
+												gutterBottom
+												sx={{
+													fontWeight: 600,
+												}}
+											>
+												{result.title}
+											</Typography>
+											<Typography
+												variant="body2"
+												color="text.secondary"
+												gutterBottom
+												fontWeight={600}
+											>
+												Created{" "}
+												{timeAgo(result.created_at)}
+											</Typography>
+											<Typography
+												variant="body2"
+												color="text.secondary"
+												sx={{
+													display: "-webkit-box",
+													WebkitLineClamp: 2,
+													WebkitBoxOrient: "vertical",
+													overflow: "hidden",
+													textOverflow: "ellipsis",
+												}}
+											>
+												{result.content}
+											</Typography>
+										</CardActionArea>
+									</Grid>
+								</Fade>
+							))
+						)}
+					</Grid>
+				) : !topics || topics.length === 0 ? (
 					<Box
 						sx={{
 							textAlign: "center",

@@ -48,4 +48,8 @@ export const likePost = async (postId: number): Promise<void> =>{
 export const deletePost = async (postID: number): Promise<void> =>{
     await client.delete(`posts/${postID}`)
 }
+export const searchPost = async (query: string): Promise<Post[]> =>{
+    const response  = await client.get(`search?q=${query}`)
+    return response.data
+}
 

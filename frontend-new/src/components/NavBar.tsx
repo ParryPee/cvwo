@@ -29,6 +29,13 @@ function ResponsiveAppBar() {
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
 		null
 	);
+	const [searchTerm, setSearchTerm] = React.useState("");
+
+	const handleSearch = (e: React.KeyboardEvent) => {
+		if (e.key === "Enter") {
+			navigate(`/?q=${searchTerm}`);
+		}
+	};
 
 	const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorElNav(event.currentTarget);
@@ -140,7 +147,7 @@ function ResponsiveAppBar() {
 							textDecoration: "none",
 						}}
 					>
-						LOGO
+						CVWO
 					</Typography>
 
 					<Box
@@ -160,6 +167,19 @@ function ResponsiveAppBar() {
 								{page}
 							</Button>
 						))}
+					</Box>
+					<Box sx={{ mr: 2, display: "flex", alignItems: "center" }}>
+						<input
+							placeholder="Search..."
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							onKeyDown={handleSearch}
+							style={{
+								padding: "8px",
+								borderRadius: "4px",
+								border: "none",
+							}}
+						/>
 					</Box>
 
 					<Box sx={{ flexGrow: 0 }}>

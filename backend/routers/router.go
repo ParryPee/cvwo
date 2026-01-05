@@ -38,7 +38,7 @@ func SetupRouter(db *sql.DB, jwtkey []byte) http.Handler {
 	// Post routes
 	optionalAuth.HandleFunc("/topics/{topic_id}/posts", postHandler.GetAllTopicPosts).Methods("GET") // Get all posts for a topic
 	optionalAuth.HandleFunc("/posts/{post_id}", postHandler.GetPostByID).Methods("GET")              // Get Post by ID
-	optionalAuth.HandleFunc("/posts/search", postHandler.SearchPost).Methods("GET")
+	optionalAuth.HandleFunc("/search", postHandler.SearchPost).Methods("GET")
 
 	//Protected routes
 	protected := r.PathPrefix("/api").Subrouter()

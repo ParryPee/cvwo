@@ -213,7 +213,6 @@ func (m *PostHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 }
 func (m *PostHandler) SearchPost(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
-
 	if query == "" {
 		http.Error(w, "Query parameter 'q' is required", http.StatusBadRequest)
 		return
