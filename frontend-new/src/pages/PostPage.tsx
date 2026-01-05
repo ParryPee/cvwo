@@ -6,6 +6,7 @@ import {
 	createComment,
 	likeComment,
 	likePost,
+	deletePost,
 } from "../api/forum";
 import type { Post, Comment } from "../types/models";
 import { useAuth } from "../context/AuthContext";
@@ -15,6 +16,7 @@ import TextBox from "../components/TextBox";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IconButton from "@mui/material/IconButton";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
 	Container,
@@ -85,6 +87,19 @@ const TopicPage = () => {
 			navigate(0);
 		} catch (error) {
 			console.error("failed to like post", error);
+		}
+	};
+	const handleDeletePost = async () => {
+		if (!isAuthenticated || !postId) {
+			navigate("/login");
+			return;
+		}
+		try {
+			const postIDNum = parseInt(postId, 10);
+			await deletePost(postIDNum);
+			navigate("/");
+		} catch (error) {
+			console.error("failed to delete post", error);
 		}
 	};
 	useEffect(() => {
@@ -159,25 +174,37 @@ const TopicPage = () => {
 					<Typography variant="caption">
 						{post.likes || 0} Likes
 					</Typography>
-					{isAuthenticated && (
-						<IconButton onClick={() => handlePostLike()}>
-							{post.liked_by_user ? (
-								<FavoriteIcon
+					<Box sx={{ display: "flex", gap: 1 }}>
+						{isAuthenticated && (
+							<IconButton onClick={() => handlePostLike()}>
+								{post.liked_by_user ? (
+									<FavoriteIcon
+										sx={{
+											cursor: "pointer",
+											":hover": { color: "red" },
+										}}
+									/>
+								) : (
+									<FavoriteBorderIcon
+										sx={{
+											cursor: "pointer",
+											":hover": { color: "red" },
+										}}
+									/>
+								)}
+							</IconButton>
+						)}
+						{isAuthenticated && user?.id == post.user_id && (
+							<IconButton onClick={() => handleDeletePost()}>
+								<DeleteIcon
 									sx={{
 										cursor: "pointer",
 										":hover": { color: "red" },
 									}}
 								/>
-							) : (
-								<FavoriteBorderIcon
-									sx={{
-										cursor: "pointer",
-										":hover": { color: "red" },
-									}}
-								/>
-							)}
-						</IconButton>
-					)}
+							</IconButton>
+						)}
+					</Box>
 				</Box>
 			</Box>
 

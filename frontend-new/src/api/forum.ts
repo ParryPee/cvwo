@@ -45,4 +45,7 @@ export const likeComment = async (commentId: number): Promise<void> => {
 export const likePost = async (postId: number): Promise<void> =>{
     await client.post(`posts/${postId}/like`);
 }
+export const deletePost = async (postID: number): Promise<void> =>{
+    await client.delete(`posts/${postID}`)
+}
 
