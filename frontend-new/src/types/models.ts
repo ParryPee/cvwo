@@ -37,6 +37,7 @@ interface Comment {
     updated_at: string;
     created_by_username: string;
     liked_by_user: boolean;
+    deleted: boolean;
 }
 
 export type { User, Topic, Post, Comment };

@@ -22,6 +22,7 @@ type Comment struct {
 
 	ParentCommentID sql.NullInt64 `json:"parent_comment_id,omitempty"`
 	LikedByUser     bool          `json:"liked_by_user"`
+	Deleted         bool          `json:"deleted"`
 }
 
 type CommentDB struct {
@@ -30,7 +31,7 @@ type CommentDB struct {
 
 func (m *CommentDB) AllByPostID(postID, userID int64) ([]Comment, error) {
 	query := `SELECT c.id, c.content, c.likes, c.created_at, c.updated_at,
-		 c.post_id, c.user_id, c.parent_id, u.username,
+		 c.post_id, c.user_id, c.parent_id,c.deleted, u.username,
 		 EXISTS (SELECT 1 FROM comment_likes cl where cl.comment_id = c.id AND cl.user_id = ?) AS liked_by_user
 	
 	FROM comments c join users u on c.user_id = u.id WHERE c.post_id = ? `
@@ -43,7 +44,7 @@ func (m *CommentDB) AllByPostID(postID, userID int64) ([]Comment, error) {
 	for rows.Next() {
 		var c Comment
 		if err := rows.Scan(&c.ID, &c.Content, &c.Likes, &c.CreatedAt, &c.UpdatedAt,
-			&c.PostID, &c.UserID, &c.ParentCommentID, &c.CreatedByUsername, &c.LikedByUser); err != nil {
+			&c.PostID, &c.UserID, &c.ParentCommentID, &c.Deleted, &c.CreatedByUsername, &c.LikedByUser); err != nil {
 			return nil, err
 		}
 		comments = append(comments, c)
@@ -60,7 +61,7 @@ func (m *CommentDB) Create(postID int64, userID int64, content string, parentCom
 	return result.LastInsertId()
 }
 func (m *CommentDB) Delete(commentID int64) error {
-	_, err := m.DB.Exec("DELETE FROM comments WHERE id = ?", commentID)
+	_, err := m.DB.Exec("UPDATE comments SET deleted = 1 WHERE id = ?", commentID)
 	return err
 }
 
@@ -68,7 +69,7 @@ func (m *CommentDB) Update(commentID int64, content string) error {
 	_, err := m.DB.Exec("UPDATE comments SET content = ?, updated_at = ? WHERE id = ?", content, time.Now(), commentID)
 	return err
 }
-func (m *CommentDB) GetByID(commentID int64) (*[]Comment, error) { // Get all comments under a parent comment
+func (m *CommentDB) GetByParentID(commentID int64) (*[]Comment, error) { // Get all comments under a parent comment
 	rows, err := m.DB.Query("SELECT c.id, c.content, c.likes, c.created_at, c.updated_at, c.post_id, c.user_id, c.parent_id, u.username FROM comments c join users u on c.user_id = u.id WHERE c.parent_id = ?", commentID)
 
 	if err != nil {
@@ -78,12 +79,23 @@ func (m *CommentDB) GetByID(commentID int64) (*[]Comment, error) { // Get all co
 	var comments []Comment
 	for rows.Next() {
 		var c Comment
-		if err := rows.Scan(&c.ID, &c.Content, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID, &c.ParentCommentID, &c.CreatedByUsername); err != nil {
+		if err := rows.Scan(&c.ID, &c.Content, &c.Likes, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID, &c.ParentCommentID, &c.Deleted, &c.CreatedByUsername); err != nil {
 			return nil, err
 		}
 		comments = append(comments, c)
 	}
 	return &comments, nil
+
+}
+func (m *CommentDB) GetByID(commentID int64) (*Comment, error) { // Get comment by ID
+	row := m.DB.QueryRow(`SELECT c.id, c.content, c.likes, c.created_at, c.updated_at, c.post_id, c.user_id, c.parent_id,c.deleted, u.username 
+	FROM comments c join users u on c.user_id = u.id WHERE c.id = ?`, commentID)
+
+	var c Comment
+	if err := row.Scan(&c.ID, &c.Content, &c.Likes, &c.CreatedAt, &c.UpdatedAt, &c.PostID, &c.UserID, &c.ParentCommentID, &c.Deleted, &c.CreatedByUsername); err != nil {
+		return nil, err
+	}
+	return &c, nil
 
 }
 

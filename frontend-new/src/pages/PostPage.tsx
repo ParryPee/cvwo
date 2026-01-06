@@ -7,6 +7,7 @@ import {
 	likeComment,
 	likePost,
 	deletePost,
+	deleteComment,
 } from "../api/forum";
 import type { Post, Comment } from "../types/models";
 import { useAuth } from "../context/AuthContext";
@@ -100,6 +101,18 @@ const TopicPage = () => {
 			navigate("/");
 		} catch (error) {
 			console.error("failed to delete post", error);
+		}
+	};
+	const handleDeleteComment = async (commentID: number) => {
+		if (!isAuthenticated) {
+			navigate("/login");
+			return;
+		}
+		try {
+			await deleteComment(commentID);
+			navigate(0);
+		} catch (error) {
+			console.error("Failed to delete comment", error);
 		}
 	};
 	useEffect(() => {
@@ -260,7 +273,23 @@ const TopicPage = () => {
 										{comment.likes || 0} Likes
 									</Typography>
 								</Box>
-								{isAuthenticated && (
+								{isAuthenticated &&
+									!comment.deleted &&
+									comment.user_id == user?.id && (
+										<IconButton
+											onClick={() =>
+												handleDeleteComment(comment.id)
+											}
+										>
+											<DeleteIcon
+												sx={{
+													cursor: "pointer",
+													":hover": { color: "red" },
+												}}
+											/>
+										</IconButton>
+									)}
+								{isAuthenticated && !comment.deleted && (
 									<IconButton
 										sx={{
 											position: "absolute",

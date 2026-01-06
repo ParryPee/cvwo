@@ -52,4 +52,7 @@ export const searchPost = async (query: string): Promise<Post[]> =>{
     const response  = await client.get(`search?q=${query}`)
     return response.data
 }
+export const deleteComment = async(commentID: number): Promise<void> =>{
+    await client.delete(`comments/${commentID}`)
+}
 

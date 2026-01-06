@@ -37,8 +37,20 @@ func (m *CommentHandler) GetAllPostComments(w http.ResponseWriter, r *http.Reque
 		http.Error(w, fmt.Sprintf("Error fetching comments: %v", err), http.StatusInternalServerError)
 		return
 	}
+	var comments_cleaned []models.Comment
+	for _, c := range comments {
+		if c.Deleted {
+			comments_cleaned = append(comments_cleaned,
+				models.Comment{ID: c.ID, Content: "[Deleted]", Likes: 0, CreatedAt: c.CreatedAt,
+					UpdatedAt: c.UpdatedAt, PostID: c.PostID,
+					UserID: c.UserID, CreatedByUsername: "[Redacted]",
+					ParentCommentID: c.ParentCommentID, LikedByUser: c.LikedByUser, Deleted: c.Deleted})
+			continue
+		}
+		comments_cleaned = append(comments_cleaned, c)
+	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(comments)
+	json.NewEncoder(w).Encode(comments_cleaned)
 }
 func (m *CommentHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var reqBody struct {
@@ -75,12 +87,26 @@ func (m *CommentHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing comment_id parameter", http.StatusBadRequest)
 		return
 	}
+	currentUserID, ok := getUserIDFromContext(r.Context())
+	if !ok {
+		currentUserID = 0
+	}
 	commentIDInt, err := strconv.ParseInt(commentID, 10, 64)
 	if err != nil {
 		http.Error(w, "Invalid comment_id parameter", http.StatusBadRequest)
 		return
 	}
 	CommentDB := models.CommentDB{DB: m.DB}
+	comment, err := CommentDB.GetByID(commentIDInt)
+	if err != nil {
+		http.Error(w, "Error fetching comment in delete", http.StatusInternalServerError)
+		return
+	}
+	if comment.UserID != currentUserID {
+		http.Error(w, "Not allowed to delete comments other than your own!", http.StatusForbidden)
+		return
+	}
+
 	if err := CommentDB.Delete(commentIDInt); err != nil {
 		http.Error(w, fmt.Sprintf("Error deleting comment: %v", err), http.StatusInternalServerError)
 		return

@@ -15,6 +15,14 @@ function TextBox(props: { onSubmit: (text: string) => void; label: string }) {
 		props.onSubmit(text);
 		setText("");
 	};
+
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+		if (event.key === "Enter" && !event.shiftKey) {
+			event.preventDefault();
+			props.onSubmit(text);
+			setText("");
+		}
+	};
 	return (
 		<Box
 			component="form"
@@ -31,8 +39,11 @@ function TextBox(props: { onSubmit: (text: string) => void; label: string }) {
 				label={props.label || "Enter text"}
 				value={text}
 				onChange={handleChange}
+				onKeyDown={handleKeyDown}
+				multiline
+				maxRows={4}
 				size="small"
-				sx={{ borderRadius: 2 }}
+				sx={{ borderRadius: 2, flexGrow: 1 }}
 			/>
 			<IconButton
 				type="submit"
