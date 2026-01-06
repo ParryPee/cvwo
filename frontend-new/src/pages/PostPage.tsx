@@ -18,6 +18,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IconButton from "@mui/material/IconButton";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CommentBox from "../components/CommentBox";
 
 import {
 	Container,
@@ -267,92 +268,14 @@ const PostPage = () => {
 					</Typography>
 				) : (
 					comments.map((comment) => (
-						<Grid key={comment.id} size={{ xs: 12, sm: 6 }}>
-							<Card
-								sx={{
-									border: "1px solid #ddd",
-									borderRadius: "8px",
-									padding: "16px",
-									marginBottom: "16px",
-									position: "relative",
-								}}
-								//Todo: subreplies etc
-							>
-								<Typography
-									variant="body1"
-									sx={{
-										display: "-webkit-box",
-										WebkitLineClamp: 2,
-										WebkitBoxOrient: "vertical",
-										overflow: "hidden",
-										textOverflow: "ellipsis",
-									}}
-								>
-									{comment.content}
-								</Typography>
-								<Typography
-									variant="caption"
-									color="text.secondary"
-								>
-									Posted by • {comment.created_by_username} •{" "}
-									{timeAgo(comment.created_at)} (on{" "}
-									{formatDate(comment.created_at)})
-								</Typography>
-								<Box>
-									<Typography
-										variant="caption"
-										sx={{ marginTop: 2 }}
-									>
-										{comment.likes || 0} Likes
-									</Typography>
-								</Box>
-								{isAuthenticated &&
-									!comment.deleted &&
-									comment.user_id == user?.id && (
-										<IconButton
-											onClick={() =>
-												handleDeleteComment(comment.id)
-											}
-										>
-											<DeleteIcon
-												sx={{
-													cursor: "pointer",
-													":hover": { color: "red" },
-												}}
-											/>
-										</IconButton>
-									)}
-								{isAuthenticated && !comment.deleted && (
-									<IconButton
-										sx={{
-											position: "absolute",
-											top: 8,
-											right: 8,
-										}}
-										onClick={() =>
-											handleCommentLike(comment.id)
-										}
-									>
-										{comment.liked_by_user ? (
-											<FavoriteIcon
-												sx={{
-													cursor: "pointer",
-													":hover": { color: "red" },
-												}}
-											/>
-										) : (
-											<FavoriteBorderIcon
-												sx={{
-													cursor: "pointer",
-													":hover": { color: "red" },
-												}}
-											/>
-										)}
-									</IconButton>
-								)}
-								<Box my={2} />
-							</Card>
-						</Grid>
+						<CommentBox
+							key={comment.id}
+							comment={comment}
+							currentUserId={user?.id}
+							isAuthenticated={isAuthenticated}
+							onLike={handleCommentLike}
+							onDelete={handleDeleteComment}
+						/>
 					))
 				)}
 			</Box>
