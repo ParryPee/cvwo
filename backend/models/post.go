@@ -70,8 +70,8 @@ func (m *PostDB) GetByID(postID, userID int64) (*Post, error) {
 	}
 	return &p, nil
 }
-func (m *PostDB) Update(postID int64, content string) error {
-	_, err := m.DB.Exec("UPDATE posts SET content = ?, updated_at = ? WHERE id = ?", content, time.Now(), postID)
+func (m *PostDB) Update(postID int64, title, content string) error {
+	_, err := m.DB.Exec("UPDATE posts SET title = ?, content = ?, updated_at = ? WHERE id = ?", title, content, time.Now(), postID)
 	return err
 }
 func (m *PostDB) LikePost(postID, userID int64) error {

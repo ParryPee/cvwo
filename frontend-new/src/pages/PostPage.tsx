@@ -1,5 +1,5 @@
 import { use, useEffect, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, Link, data } from "react-router-dom";
 import {
 	fetchPostById,
 	fetchCommentsByPostId,
@@ -8,6 +8,7 @@ import {
 	likePost,
 	deletePost,
 	deleteComment,
+	updatePost,
 } from "../api/forum";
 import type { Post, Comment } from "../types/models";
 import { useAuth } from "../context/AuthContext";
@@ -19,7 +20,8 @@ import IconButton from "@mui/material/IconButton";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CommentBox from "../components/CommentBox";
-
+import EditIcon from "@mui/icons-material/Edit";
+import EditPostModal from "../components/EditPostModal";
 import {
 	Container,
 	CircularProgress,
@@ -38,6 +40,7 @@ const PostPage = () => {
 	const [post, setPost] = useState<Post | null>(null);
 	const [comments, setComments] = useState<Comment[]>([]);
 	const [error, setError] = useState<string | null>(null);
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const { isAuthenticated, user } = useAuth();
 
 	const handleSubmit = async (
@@ -149,6 +152,26 @@ const PostPage = () => {
 			console.error("Failed to delete comment", error);
 		}
 	};
+	const handleUpdatePost = async (newTitle: string, newContent: string) => {
+		if (!post || !postId) {
+			navigate("/login");
+			return;
+		}
+		try {
+			const postIDNum = parseInt(postId, 10);
+
+			await updatePost(postIDNum, {
+				title: newTitle,
+				content: newContent,
+			});
+			setPost({ ...post, title: newTitle, content: newContent });
+			setIsEditModalOpen(false);
+		} catch (error) {
+			console.error("Error updating post", error);
+		} finally {
+			setLoading(false);
+		}
+	};
 	useEffect(() => {
 		const loadPostAndComments = async () => {
 			if (!postId || !topicId) return;
@@ -241,6 +264,18 @@ const PostPage = () => {
 								)}
 							</IconButton>
 						)}
+						{isAuthenticated && user?.id === post.user_id && (
+							<IconButton
+								onClick={() => setIsEditModalOpen(true)}
+							>
+								<EditIcon
+									sx={{
+										cursor: "pointer",
+										":hover": { color: "blue" },
+									}}
+								/>
+							</IconButton>
+						)}
 						{isAuthenticated && user?.id == post.user_id && (
 							<IconButton onClick={() => handleDeletePost()}>
 								<DeleteIcon
@@ -279,6 +314,15 @@ const PostPage = () => {
 					))
 				)}
 			</Box>
+			{post && (
+				<EditPostModal
+					open={isEditModalOpen}
+					onClose={() => setIsEditModalOpen(false)}
+					onSubmit={handleUpdatePost}
+					initialTitle={post.title}
+					initialContent={post.content}
+				/>
+			)}
 		</Container>
 	);
 };

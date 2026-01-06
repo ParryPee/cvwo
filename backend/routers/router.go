@@ -62,7 +62,7 @@ func SetupRouter(db *sql.DB, jwtkey []byte) http.Handler {
 	// Post routes
 	protected.HandleFunc("/posts/{post_id}", postHandler.Delete).Methods("DELETE") // Delete post by ID
 	protected.HandleFunc("/posts", postHandler.Create).Methods("POST")             //Create a new post
-	protected.HandleFunc("/posts", postHandler.Update).Methods("PUT")              // Update a post by ID
+	protected.HandleFunc("/posts/{post_id}", postHandler.Update).Methods("PUT")    // Update a post by ID
 	protected.HandleFunc("/posts/{post_id}/like", postHandler.LikePost).Methods("POST")
 
 	return r

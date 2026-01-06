@@ -9,7 +9,6 @@ const root = ReactDOM.createRoot(
 
 root.render(
 	<React.StrictMode>
-		{/* The Electricity (Auth) wraps the entire house */}
 		<AuthProvider>
 			<App />
 		</AuthProvider>

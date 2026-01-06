@@ -143,14 +143,15 @@ func (m *PostHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var reqBody struct {
+		Title   string `json:"title"`
 		Content string `json:"content"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	if reqBody.Content == "" {
-		http.Error(w, "Content is required", http.StatusBadRequest)
+	if reqBody.Content == "" || reqBody.Title == "" {
+		http.Error(w, "Content and Title is required", http.StatusBadRequest)
 		return
 	}
 	currentUserID, ok := getUserIDFromContext(r.Context())
@@ -180,7 +181,7 @@ func (m *PostHandler) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Forbidden: You can only update your own posts", http.StatusForbidden)
 		return
 	}
-	res := PostDB.Update(postIDInt, reqBody.Content)
+	res := PostDB.Update(postIDInt, reqBody.Title, reqBody.Content)
 	if res != nil {
 		http.Error(w, "Error updating post", http.StatusInternalServerError)
 		return
