@@ -29,7 +29,7 @@ import {
 	Button,
 	Icon,
 } from "@mui/material";
-const TopicPage = () => {
+const PostPage = () => {
 	const navigate = useNavigate();
 	const { topicId } = useParams<{ topicId: string }>();
 	const { postId } = useParams<{ postId: string }>();
@@ -71,7 +71,21 @@ const TopicPage = () => {
 		}
 		try {
 			await likeComment(commentId);
-			navigate(0);
+			setComments((prevComments) =>
+				prevComments.map((comment) => {
+					if (comment.id == commentId) {
+						const is_liked = comment.liked_by_user;
+						return {
+							...comment,
+							liked_by_user: !is_liked,
+							likes: is_liked
+								? comment.likes - 1
+								: comment.likes + 1,
+						};
+					}
+					return comment;
+				})
+			);
 		} catch (error) {
 			console.error("Failed to like comment:", error);
 		}
@@ -85,7 +99,15 @@ const TopicPage = () => {
 			const postIdNum = parseInt(postId, 10);
 
 			await likePost(postIdNum);
-			navigate(0);
+			setPost((prevPost) => {
+				if (!prevPost) return null;
+				const isLiked = prevPost.liked_by_user;
+				return {
+					...prevPost,
+					liked_by_user: !isLiked,
+					likes: isLiked ? prevPost.likes - 1 : prevPost.likes + 1,
+				};
+			});
 		} catch (error) {
 			console.error("failed to like post", error);
 		}
@@ -110,7 +132,18 @@ const TopicPage = () => {
 		}
 		try {
 			await deleteComment(commentID);
-			navigate(0);
+			setComments((prevComments) =>
+				prevComments.map((c) => {
+					if (c.id === commentID) {
+						return {
+							...c,
+							content: "[deleted]",
+							created_by_username: "[redacted]",
+						};
+					}
+					return c;
+				})
+			);
 		} catch (error) {
 			console.error("Failed to delete comment", error);
 		}
@@ -327,4 +360,4 @@ const TopicPage = () => {
 	);
 };
 
-export default TopicPage;
+export default PostPage;
