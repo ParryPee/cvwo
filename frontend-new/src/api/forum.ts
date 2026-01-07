@@ -2,8 +2,14 @@ import client from './client';
 import type { Post, Topic, Comment } from '../types/models';
 
 
-export const fetchAllTopics = async (): Promise<Topic[]> => {
-    const response = await client.get<Topic[]>('topics');
+export const fetchAllTopics = async (size?: number, offset?: number): Promise<Topic[]> => {
+    let url = "topics"
+    if(size !== undefined && offset !== undefined){
+        url += `?size=${size}&offset=${offset}`
+
+    }
+    
+    const response = await client.get<Topic[]>(url);
     return response.data;
 }
 

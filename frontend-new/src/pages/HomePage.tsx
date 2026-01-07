@@ -28,6 +28,10 @@ const HomePage = () => {
 	const [topics, setTopics] = useState<Topic[]>([]);
 	const [searchResults, setSearchResults] = useState<Post[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [loadingMore, setLoadingMore] = useState(false);
+	const [hasMore, setHasMore] = useState(true);
+	const [offset, setOffset] = useState(0);
+	const LIMIT = 10;
 	const { isAuthenticated, user } = useAuth();
 
 	useEffect(() => {
@@ -38,8 +42,11 @@ const HomePage = () => {
 					const data = await searchPost(query);
 					setSearchResults(data);
 				} else {
-					const data = await fetchAllTopics();
+					setOffset(0);
+
+					const data = await fetchAllTopics(LIMIT, 0);
 					setTopics(data);
+					setHasMore(data.length === LIMIT);
 				}
 			} catch (error) {
 				console.error("Failed to fetch data:", error);
@@ -50,7 +57,24 @@ const HomePage = () => {
 
 		loadData();
 	}, [query]);
+	const handleLoadMore = async () => {
+		setLoadingMore(true);
+		const newOffset = offset + LIMIT;
+		try {
+			const newTopics = await fetchAllTopics(LIMIT, newOffset);
 
+			if (newTopics.length < LIMIT) {
+				setHasMore(false);
+			}
+
+			setTopics((prev) => [...prev, ...newTopics]);
+			setOffset(newOffset);
+		} catch (error) {
+			console.error("Failed to fetch more topics:", error);
+		} finally {
+			setLoadingMore(false);
+		}
+	};
 	if (loading) {
 		return (
 			<Container>
@@ -244,6 +268,28 @@ const HomePage = () => {
 							</Fade>
 						))}
 					</Grid>
+				)}
+				{hasMore && topics.length > 0 && (
+					<Box
+						sx={{
+							display: "flex",
+							justifyContent: "center",
+							mt: 4,
+							mb: 2,
+						}}
+					>
+						<Button
+							variant="outlined"
+							onClick={handleLoadMore}
+							disabled={loadingMore}
+						>
+							{loadingMore ? (
+								<CircularProgress size={24} />
+							) : (
+								"Load More Topics"
+							)}
+						</Button>
+					</Box>
 				)}
 			</Box>
 		);

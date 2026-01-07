@@ -12,7 +12,7 @@ type Topic struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 
-	CreatedBy         int64  `json:"created_by"`
+	UserID            int64  `json:"created_by"`
 	CreatedByUsername string `json:"created_by_username"`
 }
 
@@ -32,7 +32,7 @@ func (m *TopicDB) All() ([]Topic, error) {
 	var topics []Topic
 	for rows.Next() {
 		var t Topic
-		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.CreatedBy, &t.CreatedByUsername); err != nil {
+		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.UserID, &t.CreatedByUsername); err != nil {
 			return nil, err
 		}
 		topics = append(topics, t)
@@ -47,7 +47,7 @@ func (m *TopicDB) GetByID(topicID int64) (*Topic, error) {
 		JOIN users u ON t.user_id = u.id
 		WHERE t.id = ?`, topicID)
 	var t Topic
-	if err := row.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.CreatedBy, &t.CreatedByUsername); err != nil {
+	if err := row.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.UserID, &t.CreatedByUsername); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
@@ -70,4 +70,27 @@ func (m *TopicDB) Delete(topicID int64) error {
 func (m *TopicDB) Update(topicID int64, title, description string) error {
 	_, err := m.DB.Exec("UPDATE topics SET title = ?, description = ? WHERE id = ?", title, description, topicID)
 	return err
+}
+func (m *TopicDB) GetByBatch(batch_size, offset int) ([]Topic, error) {
+	rows, err := m.DB.Query(`SELECT t.id, t.title, t.description, t.created_at, t.user_id, u.username
+		FROM topics t
+		JOIN users u ON t.user_id = u.id
+		ORDER BY t.created_at DESC
+		LIMIT  ? OFFSET  ?`, batch_size, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var topics []Topic
+	for rows.Next() {
+		var t Topic
+		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.UserID, &t.CreatedByUsername); err != nil {
+			return nil, err
+		}
+		topics = append(topics, t)
+	}
+	if topics == nil {
+		topics = []Topic{}
+	}
+	return topics, nil
 }

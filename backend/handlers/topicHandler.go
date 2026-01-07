@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -16,7 +17,19 @@ type TopicHandler struct {
 
 func (m *TopicHandler) GetAllTopics(w http.ResponseWriter, r *http.Request) {
 	TopicDB := models.TopicDB{DB: m.DB}
-	topics, err := TopicDB.All()
+	size_str := r.URL.Query().Get("size")
+	offset_str := r.URL.Query().Get("offset")
+	var topics []models.Topic
+
+	var err error
+
+	if size_str != "" && offset_str != "" {
+		size, _ := strconv.Atoi(size_str)
+		offset, _ := strconv.Atoi(offset_str)
+		topics, err = TopicDB.GetByBatch(size, offset)
+	} else {
+		topics, err = TopicDB.All()
+	}
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error fetching topics: %v", err), http.StatusInternalServerError)
 		return
@@ -95,7 +108,7 @@ func (m *TopicHandler) DeleteTopic(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Topic not found", http.StatusNotFound)
 		return
 	}
-	if topic.CreatedBy != currentUserID {
+	if topic.UserID != currentUserID {
 		http.Error(w, "Forbidden: You can only delete your own topics", http.StatusForbidden)
 		return
 	}
@@ -130,7 +143,7 @@ func (m *TopicHandler) UpdateTopic(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Topic not found", http.StatusNotFound)
 		return
 	}
-	if topic.CreatedBy != currentUserID {
+	if topic.UserID != currentUserID {
 		http.Error(w, "Forbidden: You can only update your own topics", http.StatusForbidden)
 		return
 	}
