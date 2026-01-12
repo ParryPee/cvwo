@@ -54,7 +54,7 @@ func (m *CommentDB) AllByPostID(postID, userID int64) ([]Comment, error) {
 
 func (m *CommentDB) Create(postID int64, userID int64, content string, parentCommentID sql.NullInt64) (int64, error) {
 	result, err := m.DB.Exec("INSERT INTO comments (content, created_at, updated_at, post_id, user_id, parent_id) VALUES (?, ?, ?, ?, ?, ?)",
-		content, time.Now(), time.Now(), postID, userID, parentCommentID)
+		content, time.Now().UTC(), time.Now().UTC(), postID, userID, parentCommentID)
 	if err != nil {
 		return 0, err
 	}
@@ -66,7 +66,7 @@ func (m *CommentDB) Delete(commentID int64) error {
 }
 
 func (m *CommentDB) Update(commentID int64, content string) error {
-	_, err := m.DB.Exec("UPDATE comments SET content = ?, updated_at = ? WHERE id = ?", content, time.Now(), commentID)
+	_, err := m.DB.Exec("UPDATE comments SET content = ?, updated_at = ? WHERE id = ?", content, time.Now().UTC(), commentID)
 	return err
 }
 func (m *CommentDB) GetByParentID(commentID int64) (*[]Comment, error) { // Get all comments under a parent comment

@@ -36,7 +36,7 @@ func (m *UserDB) All() ([]User, error) {
 	return users, nil
 }
 func (m *UserDB) Create(username string) (int64, error) {
-	result, err := m.DB.Exec("INSERT INTO users (username, created_at) VALUES (?, ?)", username, time.Now())
+	result, err := m.DB.Exec("INSERT INTO users (username, created_at) VALUES (?, ?)", username, time.Now().UTC())
 	if err != nil {
 		return 0, err
 	}

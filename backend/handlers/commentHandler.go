@@ -133,6 +133,23 @@ func (m *CommentHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	CommentDB := models.CommentDB{DB: m.DB}
+	//Ensure that the user is authorized to edit this comment
+	currentUserID, ok := getUserIDFromContext(r.Context())
+
+	if !ok {
+		http.Error(w, "Auth error. Please ensure you are logged in.", http.StatusBadRequest)
+		return
+	}
+	c, err := CommentDB.GetByID(commentIDInt)
+
+	if err != nil {
+		http.Error(w, "Error validating comment ownership", http.StatusInternalServerError)
+		return
+	}
+	if c.UserID != currentUserID { // IF user is not authorized throw an error.
+		http.Error(w, "You can only edit your own comments.", http.StatusUnauthorized)
+	}
+
 	if err := CommentDB.Update(commentIDInt, reqBody.Content); err != nil {
 		http.Error(w, fmt.Sprintf("Error updating comment: %v", err), http.StatusInternalServerError)
 		return

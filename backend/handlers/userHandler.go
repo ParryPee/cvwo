@@ -105,7 +105,6 @@ func (m *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 	w.Header().Set("Content-Type", "application/json")
-	// Use the user object you fetched earlier
 	if err := json.NewEncoder(w).Encode(user); err != nil {
 		http.Error(w, "Error encoding response", http.StatusInternalServerError)
 		return
@@ -114,7 +113,6 @@ func (m *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 	userID, ok := getUserIDFromContext(r.Context())
 	if !ok {
-		// Should catch this just in case middleware fails
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}

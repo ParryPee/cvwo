@@ -9,6 +9,7 @@ import {
 	deletePost,
 	deleteComment,
 	updatePost,
+	updateComment,
 } from "../api/forum";
 import type { Post, Comment } from "../types/models";
 import { useAuth } from "../context/AuthContext";
@@ -172,6 +173,17 @@ const PostPage = () => {
 			setLoading(false);
 		}
 	};
+	const handleUpdateComment = async (commentID: number, content: string) => {
+		if (!commentID) {
+			console.error("Invalid comment ID");
+			return;
+		}
+		try {
+			await updateComment(commentID, content);
+		} catch (error) {
+			console.error("error updating comment", error);
+		}
+	};
 	useEffect(() => {
 		const loadPostAndComments = async () => {
 			if (!postId || !topicId) return;
@@ -310,6 +322,7 @@ const PostPage = () => {
 							isAuthenticated={isAuthenticated}
 							onLike={handleCommentLike}
 							onDelete={handleDeleteComment}
+							onEdit={handleUpdateComment}
 						/>
 					))
 				)}

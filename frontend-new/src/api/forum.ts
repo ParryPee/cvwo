@@ -64,4 +64,6 @@ export const deleteComment = async(commentID: number): Promise<void> =>{
 export const updatePost = async(postID: number, data: {title: string, content: string}): Promise<void>=>{
     await client.put(`posts/${postID}`, data)
 }
-
+export const updateComment = async(commentID: number, content: string): Promise<void> =>{
+    await client.put(`comments/${commentID}`, {content: content})
+}

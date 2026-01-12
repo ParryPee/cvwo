@@ -93,7 +93,7 @@ func (m *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(post)
 }
 func (m *PostHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r) // Get variables from the request
+	vars := mux.Vars(r)
 	postID := vars["post_id"]
 
 	if postID == "" {

@@ -46,7 +46,8 @@ func (m *PostDB) AllByTopicID(topicID int64) ([]Post, error) {
 	return posts, nil
 }
 func (m *PostDB) Create(title, content string, topicID, userID int64) (int64, error) {
-	result, err := m.DB.Exec("INSERT INTO posts (title, content, created_at, updated_at, topic_id, user_id) VALUES (?, ?, ?, ?, ?, ?)", title, content, time.Now(), time.Now(), topicID, userID)
+	result, err := m.DB.Exec("INSERT INTO posts (title, content, created_at, updated_at, topic_id, user_id) VALUES (?, ?, ?, ?, ?, ?)",
+		title, content, time.Now().UTC(), time.Now().UTC(), topicID, userID)
 	if err != nil {
 		return 0, err
 	}
@@ -71,7 +72,7 @@ func (m *PostDB) GetByID(postID, userID int64) (*Post, error) {
 	return &p, nil
 }
 func (m *PostDB) Update(postID int64, title, content string) error {
-	_, err := m.DB.Exec("UPDATE posts SET title = ?, content = ?, updated_at = ? WHERE id = ?", title, content, time.Now(), postID)
+	_, err := m.DB.Exec("UPDATE posts SET title = ?, content = ?, updated_at = ? WHERE id = ?", title, content, time.Now().UTC(), postID)
 	return err
 }
 func (m *PostDB) LikePost(postID, userID int64) error {

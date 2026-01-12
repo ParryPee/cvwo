@@ -3,14 +3,13 @@ const parseDate = (dateString: string): Date => {
 	// Replace space with T
 	const isoString = dateString.trim().replace(" ", "T");
 	const date = new Date(isoString);
-	
+
 	// Fallback
 	return Number.isNaN(date.getTime()) ? new Date() : date;
 };
 
 export const formatDate = (isoString: string): string => {
 	const date = parseDate(isoString);
-
 	return new Intl.DateTimeFormat("en-US", {
 		month: "short",
 		day: "numeric",

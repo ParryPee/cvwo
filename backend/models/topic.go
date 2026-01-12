@@ -57,7 +57,8 @@ func (m *TopicDB) GetByID(topicID int64) (*Topic, error) {
 	return &t, nil
 }
 func (m *TopicDB) Create(title, description string, createdBy int64) (int64, error) {
-	result, err := m.DB.Exec("INSERT INTO topics (title, description, created_at, user_id) VALUES (?, ?, ?, ?)", title, description, time.Now(), createdBy)
+	result, err := m.DB.Exec("INSERT INTO topics (title, description, created_at, user_id) VALUES (?, ?, ?, ?)",
+		title, description, time.Now().UTC(), createdBy)
 	if err != nil {
 		return 0, err
 	}

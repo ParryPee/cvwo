@@ -4,8 +4,12 @@ import IconButton from "@mui/material/IconButton";
 import Box from "@mui/material/Box";
 import SendIcon from "@mui/icons-material/Send";
 
-function TextBox(props: { onSubmit: (text: string) => void; label: string }) {
-	const [text, setText] = React.useState("");
+function TextBox(props: {
+	onSubmit: (text: string) => void;
+	label: string;
+	content?: string;
+}) {
+	const [text, setText] = React.useState(props.content || "");
 	const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setText(event.target.value);
 	};
