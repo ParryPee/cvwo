@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Post struct {
+type Post struct { //Post Class, holds important attributes in our Post object
 	ID    int64  `json:"id"`
 	Title string `json:"title"`
 
@@ -29,14 +29,14 @@ type PostDB struct {
 	DB *sql.DB
 }
 
-func (m *PostDB) AllByTopicID(topicID int64) ([]Post, error) {
+func (m *PostDB) AllByTopicID(topicID int64) ([]Post, error) { //Selects all the posts under a specific topic
 	rows, err := m.DB.Query("SELECT p.id, p.title, p.content, p.created_at, p.updated_at, p.topic_id, p.user_id, u.username FROM posts p join users u on p.user_id = u.id WHERE p.topic_id = ?", topicID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	var posts []Post
-	for rows.Next() {
+	for rows.Next() { //Ensure that the rows retrieved from the backend matches our Post object attributes
 		var p Post
 		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.CreatedAt, &p.UpdatedAt, &p.TopicID, &p.UserID, &p.CreatedByUsername); err != nil {
 			return nil, err
@@ -45,7 +45,7 @@ func (m *PostDB) AllByTopicID(topicID int64) ([]Post, error) {
 	}
 	return posts, nil
 }
-func (m *PostDB) Create(title, content string, topicID, userID int64) (int64, error) {
+func (m *PostDB) Create(title, content string, topicID, userID int64) (int64, error) { //Creates a new Post
 	result, err := m.DB.Exec("INSERT INTO posts (title, content, created_at, updated_at, topic_id, user_id) VALUES (?, ?, ?, ?, ?, ?)",
 		title, content, time.Now().UTC(), time.Now().UTC(), topicID, userID)
 	if err != nil {
@@ -57,6 +57,8 @@ func (m *PostDB) Delete(postID int64) error {
 	_, err := m.DB.Exec("DELETE FROM posts WHERE id = ?", postID)
 	return err
 }
+
+// Returns a Post by ID together with an additional column of whether the post is liked by the user
 func (m *PostDB) GetByID(postID, userID int64) (*Post, error) {
 	query := `SELECT p.id, p.title, p.content, p.likes, p.created_at, p.updated_at, p.topic_id, p.user_id, u.username, 
 						EXISTS (SELECT 1 FROM post_likes pl where pl.post_id = p.id AND pl.user_id = ?) AS liked_by_user
@@ -71,10 +73,14 @@ func (m *PostDB) GetByID(postID, userID int64) (*Post, error) {
 	}
 	return &p, nil
 }
+
+// Updates the post
 func (m *PostDB) Update(postID int64, title, content string) error {
 	_, err := m.DB.Exec("UPDATE posts SET title = ?, content = ?, updated_at = ? WHERE id = ?", title, content, time.Now().UTC(), postID)
 	return err
 }
+
+// Like post
 func (m *PostDB) LikePost(postID, userID int64) error {
 	tx, err := m.DB.Begin()
 	if err != nil {
