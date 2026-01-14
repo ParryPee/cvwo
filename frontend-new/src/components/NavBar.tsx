@@ -170,7 +170,7 @@ function ResponsiveAppBar() {
 					</Box>
 					<Box sx={{ mr: 2, display: "flex", alignItems: "center" }}>
 						<input
-							placeholder="Search..."
+							placeholder="Search for a post"
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 							onKeyDown={handleSearch}
