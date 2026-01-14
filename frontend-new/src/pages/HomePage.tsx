@@ -32,7 +32,7 @@ const HomePage = () => {
 	const [hasMore, setHasMore] = useState(true);
 	const [offset, setOffset] = useState(0);
 	const LIMIT = 10;
-	const { isAuthenticated, user } = useAuth();
+	const { isAuthenticated } = useAuth();
 
 	useEffect(() => {
 		const loadData = async () => {

@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { fetchTopicById, fetchPostsByTopicId } from "../api/forum";
 import type { Topic, Post } from "../types/models";

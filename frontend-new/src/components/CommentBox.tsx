@@ -4,14 +4,12 @@ import {
 	Box,
 	IconButton,
 	Grid,
-	TextField,
 	Button,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { timeAgo, formatDate } from "../utils/date";
-import type { Comment } from "../types/models";
 import type { CommentNode } from "../utils/commentTree";
 import { useState } from "react";
 import TextBox from "./TextBox";

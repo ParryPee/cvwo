@@ -1,5 +1,5 @@
-import { use, useEffect, useState } from "react";
-import { useNavigate, useParams, Link, data } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
 	fetchPostById,
 	fetchCommentsByPostId,
@@ -25,16 +25,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import EditPostModal from "../components/EditPostModal";
 import { buildCommentTree } from "../utils/commentTree";
 import type { CommentNode } from "../utils/commentTree";
-import {
-	Container,
-	CircularProgress,
-	Typography,
-	Grid,
-	Card,
-	Alert,
-	Button,
-	Icon,
-} from "@mui/material";
+import { Container, CircularProgress, Typography, Alert } from "@mui/material";
 const PostPage = () => {
 	const navigate = useNavigate();
 	const { topicId } = useParams<{ topicId: string }>();
