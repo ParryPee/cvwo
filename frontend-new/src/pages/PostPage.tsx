@@ -23,6 +23,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CommentBox from "../components/CommentBox";
 import EditIcon from "@mui/icons-material/Edit";
 import EditPostModal from "../components/EditPostModal";
+import { buildCommentTree } from "../utils/commentTree";
+import type { CommentNode } from "../utils/commentTree";
 import {
 	Container,
 	CircularProgress,
@@ -43,7 +45,7 @@ const PostPage = () => {
 	const [error, setError] = useState<string | null>(null);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const { isAuthenticated, user } = useAuth();
-
+	const [rootComments, setRootComments] = useState<CommentNode[]>([]);
 	const handleSubmit = async (
 		text: string,
 		parentId: number | null = null
@@ -197,6 +199,8 @@ const PostPage = () => {
 				}
 				const postData = await fetchPostById(postIdNum);
 				const commentsData = await fetchCommentsByPostId(postIdNum);
+				const tree = buildCommentTree(commentsData);
+				setRootComments(tree);
 				setPost(postData);
 				setComments(commentsData);
 			} catch (error) {
@@ -314,10 +318,13 @@ const PostPage = () => {
 						No comments yet. Be the first to comment!
 					</Typography>
 				) : (
-					comments.map((comment) => (
+					rootComments.map((comment) => (
 						<CommentBox
 							key={comment.id}
 							comment={comment}
+							onReply={(content, parentID) =>
+								handleSubmit(content, parentID)
+							}
 							currentUserId={user?.id}
 							isAuthenticated={isAuthenticated}
 							onLike={handleCommentLike}
