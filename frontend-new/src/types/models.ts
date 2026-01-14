@@ -32,7 +32,7 @@ interface Comment {
     post_id: number;
     user_id: number;
     likes: number;
-    parent_id: number | null;
+    parent_comment_id: {Int64: number, Valid: boolean};
     created_at: string;
     updated_at: string;
     created_by_username: string;
