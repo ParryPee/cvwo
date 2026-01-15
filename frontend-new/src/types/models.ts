@@ -18,6 +18,7 @@ interface Post {
     title: string;
     content: string;
     topic_id: number;
+    topic_title: string;
     user_id: number;
     likes: number;
     created_at: string;

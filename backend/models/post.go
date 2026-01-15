@@ -17,7 +17,8 @@ type Post struct { //Post Class, holds important attributes in our Post object
 
 	UpdatedAt time.Time `json:"updated_at"`
 
-	TopicID int64 `json:"topic_id"`
+	TopicID    int64  `json:"topic_id"`
+	TopicTitle string `json:"topic_title"`
 
 	UserID int64 `json:"user_id"`
 
@@ -60,12 +61,15 @@ func (m *PostDB) Delete(postID int64) error {
 
 // Returns a Post by ID together with an additional column of whether the post is liked by the user
 func (m *PostDB) GetByID(postID, userID int64) (*Post, error) {
-	query := `SELECT p.id, p.title, p.content, p.likes, p.created_at, p.updated_at, p.topic_id, p.user_id, u.username, 
+	query := `SELECT p.id, p.title, p.content, p.likes, p.created_at, p.updated_at, p.topic_id, p.user_id, u.username, t.title,
 						EXISTS (SELECT 1 FROM post_likes pl where pl.post_id = p.id AND pl.user_id = ?) AS liked_by_user
-	FROM posts p join users u on p.user_id = u.id WHERE p.id = ?`
+	FROM posts p 
+	JOIN users u ON p.user_id = u.id 
+	JOIN topics t ON p.topic_id = t.id
+	WHERE p.id = ?`
 	row := m.DB.QueryRow(query, userID, postID)
 	var p Post
-	if err := row.Scan(&p.ID, &p.Title, &p.Content, &p.Likes, &p.CreatedAt, &p.UpdatedAt, &p.TopicID, &p.UserID, &p.CreatedByUsername, &p.LikedByUser); err != nil {
+	if err := row.Scan(&p.ID, &p.Title, &p.Content, &p.Likes, &p.CreatedAt, &p.UpdatedAt, &p.TopicID, &p.UserID, &p.CreatedByUsername, &p.TopicTitle, &p.LikedByUser); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
@@ -136,6 +140,32 @@ func (m *PostDB) SearchPost(query string) ([]Post, error) {
 		var p Post
 		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.CreatedAt,
 			&p.UpdatedAt, &p.TopicID, &p.UserID, &p.CreatedByUsername); err != nil {
+			return nil, err
+		}
+		posts = append(posts, p)
+	}
+	return posts, nil
+}
+func (m *PostDB) GetAll(userID int64, limit int64, offset int64) ([]Post, error) {
+	query := `SELECT p.id, p.title, p.content, p.likes, p.created_at, p.updated_at, p.topic_id, p.user_id, u.username, t.title,
+						EXISTS (SELECT 1 FROM post_likes pl where pl.post_id = p.id AND pl.user_id = ?) AS liked_by_user
+	FROM posts p 
+	JOIN users u ON p.user_id = u.id
+	JOIN topics t ON p.topic_id = t.id
+	ORDER BY p.created_at DESC
+	LIMIT ? OFFSET ?`
+
+	rows, err := m.DB.Query(query, userID, limit, offset)
+	if err != nil {
+
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []Post
+	for rows.Next() {
+		var p Post
+		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.Likes, &p.CreatedAt, &p.UpdatedAt, &p.TopicID, &p.UserID, &p.CreatedByUsername, &p.TopicTitle, &p.LikedByUser); err != nil {
 			return nil, err
 		}
 		posts = append(posts, p)

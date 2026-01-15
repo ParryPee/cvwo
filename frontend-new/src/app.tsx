@@ -32,6 +32,7 @@ function App() {
 						element={<CreateTopicsPage />}
 					/>
 				</Route>
+				<Route path="*" element={<HomePage />} />
 			</Routes>
 		</BrowserRouter>
 	);

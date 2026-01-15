@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 import AppBar from "@mui/material/AppBar";
@@ -19,9 +19,9 @@ import AdbIcon from "@mui/icons-material/Adb";
 const pages = ["Home"];
 
 function ResponsiveAppBar() {
-	// 1. Hook into our Auth Context
 	const { user, isAuthenticated, logout } = useAuth();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
 		null
@@ -52,11 +52,10 @@ function ResponsiveAppBar() {
 		setAnchorElUser(null);
 	};
 
-	// 2. Specialized Logout Handler
 	const handleLogout = () => {
 		handleCloseUserMenu();
 		logout();
-		navigate("/"); // Send them home after logging out
+		navigate("/");
 	};
 
 	return (
@@ -168,23 +167,31 @@ function ResponsiveAppBar() {
 							</Button>
 						))}
 					</Box>
-					<Box sx={{ mr: 2, display: "flex", alignItems: "center" }}>
-						<input
-							placeholder="Search for a post"
-							value={searchTerm}
-							onChange={(e) => setSearchTerm(e.target.value)}
-							onKeyDown={handleSearch}
-							style={{
-								padding: "8px",
-								borderRadius: "4px",
-								border: "none",
+					{location.pathname !== "/" && (
+						<Box
+							sx={{
+								mr: 2,
+								display: "flex",
+								alignItems: "center",
 							}}
-						/>
-					</Box>
+						>
+							<input
+								placeholder="Search..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+								onKeyDown={handleSearch}
+								style={{
+									padding: "8px",
+									borderRadius: "4px",
+									border: "none",
+									outline: "none",
+								}}
+							/>
+						</Box>
+					)}
 
 					<Box sx={{ flexGrow: 0 }}>
 						{!isAuthenticated ? (
-							// IF LOGGED OUT: Show Login Button
 							<Button
 								color="inherit"
 								component={Link}
@@ -195,14 +202,12 @@ function ResponsiveAppBar() {
 								Login
 							</Button>
 						) : (
-							// IF LOGGED IN: Show Avatar & Menu
 							<>
 								<Tooltip title="Open settings">
 									<IconButton
 										onClick={handleOpenUserMenu}
 										sx={{ p: 0 }}
 									>
-										{/* Show first letter of username*/}
 										<Avatar alt={user?.username || "User"}>
 											{user?.username
 												? user.username
@@ -228,13 +233,6 @@ function ResponsiveAppBar() {
 									open={Boolean(anchorElUser)}
 									onClose={handleCloseUserMenu}
 								>
-									<MenuItem onClick={handleCloseUserMenu}>
-										<Typography textAlign="center">
-											Profile
-										</Typography>
-									</MenuItem>
-
-									{/* Logout Logic */}
 									<MenuItem onClick={handleLogout}>
 										<Typography
 											textAlign="center"

@@ -23,6 +23,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CommentBox from "../components/CommentBox";
 import EditIcon from "@mui/icons-material/Edit";
 import EditPostModal from "../components/EditPostModal";
+import { Link } from "@mui/material";
 import { buildCommentTree } from "../utils/commentTree";
 import type { CommentNode } from "../utils/commentTree";
 import { Container, CircularProgress, Typography, Alert } from "@mui/material";
@@ -225,9 +226,27 @@ const PostPage = () => {
 			}}
 		>
 			<Box sx={{ border: "1px solid #ccc", borderRadius: "8px", p: 2 }}>
-				<Typography variant="h4" gutterBottom>
-					{post.title}
-				</Typography>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "row",
+						gap: 2,
+						alignContent: "center",
+						alignItems: "center",
+					}}
+				>
+					<Typography variant="h4" gutterBottom>
+						{post.title}
+					</Typography>
+					<Link
+						variant="caption"
+						className="MuiLink-underlineHover"
+						href={`/topics/${post.topic_id}`}
+					>
+						Posted at {post.topic_title}
+					</Link>
+				</Box>
+
 				<Typography variant="caption" color="text.secondary">
 					Posted by • {post.created_by_username} •{" "}
 					{timeAgo(post.created_at)} (on {formatDate(post.created_at)}

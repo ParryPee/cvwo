@@ -1,38 +1,45 @@
 import { useEffect, useState } from "react";
-import {
-	useNavigate,
-	Link as RouterLink,
-	useSearchParams,
-} from "react-router-dom";
-import { fetchAllTopics, searchPost } from "../api/forum"; // Import both
-import type { Topic, Post } from "../types/models";
-import { timeAgo } from "../utils/date";
-import Box from "@mui/material/Box";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { fetchAllPosts, searchPost } from "../api/forum"; // <--- Updated import
+import type { Post } from "../types/models";
 import {
 	Container,
-	CircularProgress,
-	Typography,
 	Grid,
-	CardActionArea,
-	Fade,
+	Box,
+	Typography,
 	Button,
+	TextField,
+	Paper,
+	Divider,
+	CircularProgress,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import ClearIcon from "@mui/icons-material/Clear";
+import WhatshotIcon from "@mui/icons-material/Whatshot";
 import { useAuth } from "../context/AuthContext";
+import Feed from "../components/Feed";
 
 const HomePage = () => {
 	const navigate = useNavigate();
-
 	const [searchParams] = useSearchParams();
 	const query = searchParams.get("q");
 
-	const [topics, setTopics] = useState<Topic[]>([]);
-	const [searchResults, setSearchResults] = useState<Post[]>([]);
+	const [posts, setPosts] = useState<Post[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [loadingMore, setLoadingMore] = useState(false);
-	const [hasMore, setHasMore] = useState(true);
-	const [offset, setOffset] = useState(0);
+	const [searchTerm, setSearchTerm] = useState("");
+
 	const LIMIT = 10;
 	const { isAuthenticated } = useAuth();
+
+	const handleSearch = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (searchTerm.trim()) navigate(`/?q=${searchTerm}`);
+	};
+
+	const handleClearSearch = () => {
+		setSearchTerm("");
+		navigate("/");
+	};
 
 	useEffect(() => {
 		const loadData = async () => {
@@ -40,16 +47,14 @@ const HomePage = () => {
 			try {
 				if (query) {
 					const data = await searchPost(query);
-					setSearchResults(data);
+					setPosts(data);
+					setSearchTerm(query);
 				} else {
-					setOffset(0);
-
-					const data = await fetchAllTopics(LIMIT, 0);
-					setTopics(data);
-					setHasMore(data.length === LIMIT);
+					const data = await fetchAllPosts(LIMIT, 0);
+					setPosts(data);
 				}
 			} catch (error) {
-				console.error("Failed to fetch data:", error);
+				console.error("Failed to fetch posts:", error);
 			} finally {
 				setLoading(false);
 			}
@@ -57,243 +62,172 @@ const HomePage = () => {
 
 		loadData();
 	}, [query]);
-	const handleLoadMore = async () => {
-		setLoadingMore(true);
-		const newOffset = offset + LIMIT;
-		try {
-			const newTopics = await fetchAllTopics(LIMIT, newOffset);
 
-			if (newTopics.length < LIMIT) {
-				setHasMore(false);
-			}
-
-			setTopics((prev) => [...prev, ...newTopics]);
-			setOffset(newOffset);
-		} catch (error) {
-			console.error("Failed to fetch more topics:", error);
-		} finally {
-			setLoadingMore(false);
-		}
-	};
 	if (loading) {
 		return (
-			<Container>
+			<Container
+				sx={{ mt: 8, display: "flex", justifyContent: "center" }}
+			>
 				<CircularProgress />
 			</Container>
 		);
-	} else {
-		return (
-			<Box
+	}
+
+	return (
+		<Box sx={{ pb: 8 }}>
+			<Paper
+				elevation={0}
 				sx={{
-					border: "1px solid #ccc",
-					borderRadius: "8px",
-					padding: "16px",
-					paddingX: "4rem",
-					marginTop: "16px",
+					bgcolor: "primary.main",
+					color: "primary.contrastText",
+					pt: 8,
+					pb: 8,
+					mb: 4,
+					borderRadius: 0,
 				}}
 			>
-				<Box
-					sx={{
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "space-between",
-						mb: 2,
-					}}
-				>
-					<Typography variant="h4" gutterBottom sx={{ mb: 0 }}>
-						{query ? `Results for : ${query}` : "Home Page"}
+				<Container maxWidth="md" sx={{ textAlign: "center" }}>
+					<Typography
+						variant="h3"
+						component="h1"
+						fontWeight="bold"
+						gutterBottom
+					>
+						Welcome to the Community
 					</Typography>
-					{query ? (
+					<Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
+						Search for posts!
+					</Typography>
+
+					<Paper
+						component="form"
+						onSubmit={handleSearch}
+						sx={{
+							p: "2px 4px",
+							display: "flex",
+							alignItems: "center",
+							width: "100%",
+							maxWidth: 600,
+							mx: "auto",
+							borderRadius: "50px",
+							pl: 2,
+						}}
+					>
+						<TextField
+							fullWidth
+							placeholder="Search for posts..."
+							variant="standard"
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+						/>
 						<Button
+							type="submit"
 							variant="contained"
-							onClick={() => navigate("/")}
+							sx={{ borderRadius: "50px", px: 4, m: 0.5 }}
 						>
-							Back to Home
+							Search
 						</Button>
-					) : (
-						isAuthenticated && (
-							<Button
-								variant="contained"
-								color="primary"
-								onClick={() => navigate(`/topics/create`)}
-							>
-								Create Topic
-							</Button>
-						)
-					)}
-				</Box>
-				{query ? (
-					<Grid container spacing={2} sx={{ padding: "16px" }}>
-						{!searchResults || searchResults.length === 0 ? (
-							<Box
-								sx={{
-									textAlign: "center",
-									padding: "48px 16px",
-								}}
-							>
-								<Typography variant="h6" color="text.secondary">
-									No results for "{query}"
-								</Typography>
-							</Box>
-						) : (
-							searchResults.map((result, index) => (
-								<Fade
-									key={result.id}
-									in={true}
-									timeout={800}
-									style={{
-										transitionDelay: `${index * 150}ms`,
+					</Paper>
+				</Container>
+			</Paper>
+
+			<Container maxWidth="lg">
+				<Grid container spacing={4}>
+					<Grid size={{ xs: 12, md: 8 }}>
+						<Box
+							sx={{
+								display: "flex",
+								justifyContent: "space-between",
+								alignItems: "center",
+								mb: 2,
+							}}
+						>
+							{query ? (
+								<Box
+									sx={{
+										display: "flex",
+										alignItems: "center",
+										gap: 2,
 									}}
 								>
-									<Grid size={{ xs: 12, sm: 6 }}>
-										<CardActionArea
-											sx={{
-												padding: "16px",
-												border: "1px solid #ddd",
-												borderRadius: "8px",
-												display: "block",
-											}}
-											component={RouterLink}
-											to={`/topics/${result.topic_id}/posts/${result.id}`}
-										>
-											<Typography
-												variant="h6"
-												component="h3"
-												gutterBottom
-												sx={{
-													fontWeight: 600,
-												}}
-											>
-												{result.title}
-											</Typography>
-											<Typography
-												variant="body2"
-												color="text.secondary"
-												gutterBottom
-												fontWeight={600}
-											>
-												Created{" "}
-												{timeAgo(result.created_at)}
-											</Typography>
-											<Typography
-												variant="body2"
-												color="text.secondary"
-												sx={{
-													display: "-webkit-box",
-													WebkitLineClamp: 2,
-													WebkitBoxOrient: "vertical",
-													overflow: "hidden",
-													textOverflow: "ellipsis",
-												}}
-											>
-												{result.content}
-											</Typography>
-										</CardActionArea>
-									</Grid>
-								</Fade>
-							))
-						)}
-					</Grid>
-				) : !topics || topics.length === 0 ? (
-					<Box
-						sx={{
-							textAlign: "center",
-							padding: "48px 16px",
-						}}
-					>
-						<Typography variant="h6" color="text.secondary">
-							No topics available yet
-						</Typography>
-						<Typography
-							variant="body2"
-							color="text.secondary"
-							sx={{ mt: 1 }}
-						>
-							Be the first to create a topic!
-						</Typography>
-					</Box>
-				) : (
-					<Grid container spacing={2} sx={{ padding: "16px" }}>
-						{topics.map((topic, index) => (
-							<Fade
-								key={topic.id}
-								in={true}
-								timeout={800}
-								style={{ transitionDelay: `${index * 150}ms` }}
-							>
-								<Grid size={{ xs: 12, sm: 6 }}>
-									<CardActionArea
-										sx={{
-											padding: "16px",
-											border: "1px solid #ddd",
-											borderRadius: "8px",
-											display: "block",
-										}}
-										component={RouterLink}
-										to={`/topics/${topic.id}`}
+									<Typography variant="h5" fontWeight="bold">
+										Results for "{query}"
+									</Typography>
+									<Button
+										startIcon={<ClearIcon />}
+										onClick={handleClearSearch}
+										size="small"
+										color="inherit"
 									>
-										<Typography
-											variant="h6"
-											component="h3"
-											gutterBottom
-											sx={{
-												fontWeight: 600,
-											}}
-										>
-											{topic.title}
-										</Typography>
-										<Typography
-											variant="body2"
-											color="text.secondary"
-											gutterBottom
-											fontWeight={600}
-										>
-											Created {timeAgo(topic.created_at)}
-										</Typography>
-										<Typography
-											variant="body2"
-											color="text.secondary"
-											sx={{
-												display: "-webkit-box",
-												WebkitLineClamp: 2,
-												WebkitBoxOrient: "vertical",
-												overflow: "hidden",
-												textOverflow: "ellipsis",
-											}}
-										>
-											{topic.description}
-										</Typography>
-									</CardActionArea>
-								</Grid>
-							</Fade>
-						))}
-					</Grid>
-				)}
-				{hasMore && topics.length > 0 && (
-					<Box
-						sx={{
-							display: "flex",
-							justifyContent: "center",
-							mt: 4,
-							mb: 2,
-						}}
-					>
-						<Button
-							variant="outlined"
-							onClick={handleLoadMore}
-							disabled={loadingMore}
-						>
-							{loadingMore ? (
-								<CircularProgress size={24} />
+										Clear
+									</Button>
+								</Box>
 							) : (
-								"Load More Topics"
+								<Box
+									sx={{
+										display: "flex",
+										alignItems: "center",
+										gap: 1,
+									}}
+								>
+									<WhatshotIcon color="error" />
+									<Typography variant="h5" fontWeight="bold">
+										Latest Activity
+									</Typography>
+								</Box>
 							)}
-						</Button>
-					</Box>
-				)}
-			</Box>
-		);
-	}
+
+							{isAuthenticated && (
+								<Button
+									variant="outlined"
+									startIcon={<AddIcon />}
+									onClick={() => navigate(`/topics/create`)}
+									size="small"
+								>
+									New Topic
+								</Button>
+							)}
+						</Box>
+
+						<Divider sx={{ mb: 3 }} />
+
+						<Feed
+							items={posts}
+							emptyMessage={
+								query
+									? `No posts found for "${query}"`
+									: "No posts yet. Be the first to start a conversation!"
+							}
+						/>
+					</Grid>
+
+					<Grid size={{ xs: 12, md: 4 }}>
+						<Box sx={{ position: "sticky", top: 24 }}>
+							<Paper
+								sx={{ p: 3, mb: 3, borderRadius: 2 }}
+								variant="outlined"
+							>
+								<Typography
+									variant="body2"
+									color="text.secondary"
+								>
+									Welcome to the forum, join in the discussion
+									or start your own!
+								</Typography>
+								<Button
+									fullWidth
+									variant="contained"
+									onClick={() => navigate("/topics/create")}
+								>
+									Start your own topic!
+								</Button>
+							</Paper>
+						</Box>
+					</Grid>
+				</Grid>
+			</Container>
+		</Box>
+	);
 };
 
 export default HomePage;

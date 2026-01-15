@@ -67,3 +67,7 @@ export const updatePost = async(postID: number, data: {title: string, content: s
 export const updateComment = async(commentID: number, content: string): Promise<void> =>{
     await client.put(`comments/${commentID}`, {content: content})
 }
+export const fetchAllPosts = async(limit?: number, offset?:number): Promise<Post[]> =>{
+    const response = await client.get<Post[]>(`posts?size=${limit}&offset=${offset}`);
+    return response.data
+}

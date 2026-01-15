@@ -242,3 +242,34 @@ func (m *PostHandler) SearchPost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
 }
+func (m *PostHandler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
+	PostDB := models.PostDB{DB: m.DB}
+
+	size_str := r.URL.Query().Get("size")
+	offset_str := r.URL.Query().Get("offset")
+	currentUserID, ok := getUserIDFromContext(r.Context())
+	if !ok {
+		currentUserID = 0
+	}
+
+	var posts []models.Post
+
+	var err error
+
+	if size_str != "" && offset_str != "" {
+		size, _ := strconv.ParseInt(size_str, 10, 64)
+		offset, _ := strconv.ParseInt(offset_str, 10, 64)
+		posts, err = PostDB.GetAll(currentUserID, size, offset)
+	} else {
+		// If no size or offset is specified just return the first 10
+		posts, err = PostDB.GetAll(currentUserID, 10, 0)
+	}
+	if err != nil {
+		fmt.Print(err)
+		http.Error(w, "Error fetching posts", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(posts)
+
+}
