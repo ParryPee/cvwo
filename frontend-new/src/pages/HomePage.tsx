@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { fetchAllPosts, searchPost } from "../api/forum"; // <--- Updated import
+import { fetchAllPosts, searchPost } from "../api/forum";
 import type { Post } from "../types/models";
 import {
 	Container,

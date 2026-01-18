@@ -16,7 +16,10 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 
-const pages = ["Home"];
+const pages = [
+	{ name: "Home", link: "/" },
+	{ name: "Explore", link: "/explore" },
+];
 
 function ResponsiveAppBar() {
 	const { user, isAuthenticated, logout } = useAuth();
@@ -24,10 +27,10 @@ function ResponsiveAppBar() {
 	const location = useLocation();
 
 	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-		null
+		null,
 	);
 	const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-		null
+		null,
 	);
 	const [searchTerm, setSearchTerm] = React.useState("");
 
@@ -114,13 +117,13 @@ function ResponsiveAppBar() {
 						>
 							{pages.map((page) => (
 								<MenuItem
-									key={page}
+									key={page.name}
 									component={Link}
-									to="/"
+									to={page.link}
 									onClick={handleCloseNavMenu}
 								>
 									<Typography textAlign="center">
-										{page}
+										{page.name}
 									</Typography>
 								</MenuItem>
 							))}
@@ -157,13 +160,13 @@ function ResponsiveAppBar() {
 					>
 						{pages.map((page) => (
 							<Button
-								key={page}
+								key={page.name}
 								component={Link}
-								to="/"
+								to={page.link}
 								onClick={handleCloseNavMenu}
 								sx={{ my: 2, color: "white", display: "block" }}
 							>
-								{page}
+								{page.name}
 							</Button>
 						))}
 					</Box>
