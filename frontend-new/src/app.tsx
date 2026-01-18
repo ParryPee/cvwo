@@ -8,6 +8,7 @@ import CreatePostPage from "./pages/CreatePostPage";
 import CreateTopicsPage from "./pages/CreateTopicsPage";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import RegisterPage from "./pages/RegisterPage";
+import ExploreTopicsPage from "./pages/ExplorePage";
 
 function App() {
 	return (
@@ -18,6 +19,7 @@ function App() {
 				<Route path="/login" element={<LoginPage />} />
 				<Route path="/register" element={<RegisterPage />} />
 				<Route path="/topics/:topicId" element={<TopicPage />} />
+				<Route path="/explore" element={<ExploreTopicsPage />} />
 				<Route
 					path="/topics/:topicId/posts/:postId"
 					element={<PostPage />}

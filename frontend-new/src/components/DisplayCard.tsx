@@ -1,11 +1,4 @@
-import {
-	Card,
-	CardActionArea,
-	Typography,
-	Box,
-	Chip,
-	Link,
-} from "@mui/material";
+import { Card, CardActionArea, Typography, Box, Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { timeAgo } from "../utils/date";
 
