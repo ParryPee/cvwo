@@ -125,7 +125,8 @@ func (m *PostDB) LikePost(postID, userID int64) error {
 }
 func (m *PostDB) SearchPost(query string) ([]Post, error) {
 	sql_qry := `SELECT p.id, p.title, p.content, p.created_at, p.updated_at, p.topic_id, p.user_id,
-	u.username FROM posts p JOIN users u ON p.id = u.id
+	u.username FROM posts p 
+	JOIN users u ON p.user_id = u.id
 	WHERE MATCH(p.title,p.content) AGAINST (? IN NATURAL LANGUAGE MODE)
 	ORDER BY p.created_at DESC
 	`

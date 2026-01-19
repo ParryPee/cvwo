@@ -227,21 +227,6 @@ func (m *PostHandler) LikePost(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
-func (m *PostHandler) SearchPost(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query().Get("q")
-	if query == "" {
-		http.Error(w, "Query parameter 'q' is required", http.StatusBadRequest)
-		return
-	}
-	PostDB := models.PostDB{DB: m.DB}
-	posts, err := PostDB.SearchPost(query)
-	if err != nil {
-		http.Error(w, "Error searching for posts", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(posts)
-}
 func (m *PostHandler) GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	PostDB := models.PostDB{DB: m.DB}
 

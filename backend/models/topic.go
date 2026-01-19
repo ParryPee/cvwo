@@ -95,3 +95,32 @@ func (m *TopicDB) GetByBatch(batch_size, offset int) ([]Topic, error) {
 	}
 	return topics, nil
 }
+func (m *TopicDB) SearchTopic(query string) ([]Topic, error) {
+	sql_qry := `SELECT t.id, t.title, t.description,  t.created_at,t.user_id, u.username
+	FROM topics t
+	JOIN users u ON t.user_id = u.id
+	WHERE t.title LIKE ? OR t.description LIKE ?
+	ORDER BY t.created_at DESC
+	`
+
+	searchTerm := "%" + query + "%"
+
+	rows, err := m.DB.Query(sql_qry, searchTerm, searchTerm)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var topics []Topic
+	for rows.Next() {
+		var t Topic
+		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.UserID, &t.CreatedByUsername); err != nil {
+			return nil, err
+		}
+		topics = append(topics, t)
+	}
+	if topics == nil {
+		topics = []Topic{}
+	}
+	return topics, nil
+}

@@ -41,6 +41,15 @@ func (m *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	UserDB := models.UserDB{DB: m.DB}
+	row, err := UserDB.DB.Query("SELECT id FROM users WHERE username = ?", reqBody.Username)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error checking existing user: %v", err), http.StatusInternalServerError)
+		return
+	}
+	if row.Next() { // Check if user already exists
+		http.Error(w, "User already exists", http.StatusConflict)
+		return
+	}
 	userID, err := UserDB.Create(reqBody.Username)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error creating user: %v", err), http.StatusInternalServerError)
@@ -161,7 +170,7 @@ func (m *UserHandler) Logout(w http.ResponseWriter, r *http.Request) { //Logout 
 	w.WriteHeader(http.StatusNoContent)
 	w.Write([]byte("Logged out successfully"))
 }
-func (m *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) { // Returns the user object by ID 
+func (m *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) { // Returns the user object by ID
 	vars := mux.Vars(r)
 	userIDParam := vars["user_id"]
 	var uid int64

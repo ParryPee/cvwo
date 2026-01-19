@@ -16,6 +16,7 @@ func SetupRouter(db *sql.DB, jwtkey []byte) http.Handler {
 	postHandler := &handlers.PostHandler{DB: db}
 	commentHandler := &handlers.CommentHandler{DB: db}
 	userHandler := &handlers.UserHandler{DB: db, JWTKey: jwtkey}
+	searchHandler := &handlers.SearchHandler{DB: db}
 	authMiddleware := &middleware.AuthMiddleware{JWTKey: jwtkey}
 
 	//Public routes
@@ -38,8 +39,8 @@ func SetupRouter(db *sql.DB, jwtkey []byte) http.Handler {
 	// Post routes
 	optionalAuth.HandleFunc("/topics/{topic_id}/posts", postHandler.GetAllTopicPosts).Methods("GET") // Get all posts for a topic
 	optionalAuth.HandleFunc("/posts/{post_id}", postHandler.GetPostByID).Methods("GET")              // Get Post by ID
-	optionalAuth.HandleFunc("/search", postHandler.SearchPost).Methods("GET")
 	optionalAuth.HandleFunc("/posts", postHandler.GetAllPosts).Methods("GET")
+	optionalAuth.HandleFunc("/search", searchHandler.SearchPostAndTopics).Methods("GET") // Search posts and topics
 	//Protected routes
 	protected := r.PathPrefix("/api").Subrouter()
 	protected.Use(authMiddleware.ValidateToken)

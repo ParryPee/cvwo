@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { fetchAllPosts, searchPost } from "../api/forum";
-import type { Post } from "../types/models";
+import { fetchAllPosts, searchGlobal } from "../api/forum";
+import type { Post, Topic, SearchResult } from "../types/models";
 import {
 	Container,
 	Grid,
@@ -12,10 +12,15 @@ import {
 	Paper,
 	Divider,
 	CircularProgress,
+	Card,
+	CardContent,
+	CardActionArea,
+	Stack,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ClearIcon from "@mui/icons-material/Clear";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
+import ForumIcon from "@mui/icons-material/Forum";
 import { useAuth } from "../context/AuthContext";
 import Feed from "../components/Feed";
 
@@ -24,7 +29,7 @@ const HomePage = () => {
 	const [searchParams] = useSearchParams();
 	const query = searchParams.get("q");
 
-	const [posts, setPosts] = useState<Post[]>([]);
+	const [data, setData] = useState<SearchResult>({ posts: [], topics: [] });
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState("");
 
@@ -46,15 +51,21 @@ const HomePage = () => {
 			setLoading(true);
 			try {
 				if (query) {
-					const data = await searchPost(query);
-					setPosts(data);
+					const data = await searchGlobal(query);
+					setData(data);
 					setSearchTerm(query);
+					if (!data.topics) {
+						data.topics = [];
+					}
+					if (!data.posts) {
+						data.posts = [];
+					}
 				} else {
 					const data = await fetchAllPosts(LIMIT, 0);
-					setPosts(data);
+					setData({ posts: data, topics: [] });
 				}
 			} catch (error) {
-				console.error("Failed to fetch posts:", error);
+				console.error("Failed to load data", error);
 			} finally {
 				setLoading(false);
 			}
@@ -72,6 +83,7 @@ const HomePage = () => {
 			</Container>
 		);
 	}
+	console.log(data.topics);
 
 	return (
 		<Box sx={{ pb: 8 }}>
@@ -191,8 +203,103 @@ const HomePage = () => {
 
 						<Divider sx={{ mb: 3 }} />
 
+						{loading ? (
+							<Box
+								sx={{
+									display: "flex",
+									justifyContent: "center",
+									mt: 4,
+								}}
+							>
+								<CircularProgress />
+							</Box>
+						) : (
+							<>
+								{query && data.topics.length > 0 && (
+									<Box sx={{ mb: 4 }}>
+										<Typography
+											variant="h6"
+											gutterBottom
+											sx={{
+												display: "flex",
+												alignItems: "center",
+												gap: 1,
+											}}
+										>
+											<ForumIcon
+												color="primary"
+												fontSize="small"
+											/>
+											Communities
+										</Typography>
+										<Stack
+											direction="row"
+											spacing={2}
+											sx={{
+												overflowX: "auto",
+												pb: 1,
+											}}
+										>
+											{data.topics.map((topic) => (
+												<Card
+													key={topic.id}
+													variant="outlined"
+													sx={{
+														minWidth: 200,
+														maxWidth: 250,
+														flexShrink: 0,
+													}}
+												>
+													<CardActionArea
+														onClick={() =>
+															navigate(
+																`/topics/${topic.id}`,
+															)
+														}
+													>
+														<CardContent
+															sx={{ py: 2 }}
+														>
+															<Typography
+																variant="subtitle1"
+																fontWeight="bold"
+																noWrap
+															>
+																{topic.title}
+															</Typography>
+															<Typography
+																variant="caption"
+																color="text.secondary"
+																noWrap
+																display="block"
+															>
+																{
+																	topic.description
+																}
+															</Typography>
+														</CardContent>
+													</CardActionArea>
+												</Card>
+											))}
+										</Stack>
+										<Divider sx={{ mt: 3 }} />
+									</Box>
+								)}
+							</>
+						)}
+						{query &&
+							data.topics.length > 0 &&
+							data.posts.length > 0 && (
+								<Typography
+									variant="h6"
+									gutterBottom
+									sx={{ mt: 2 }}
+								>
+									Posts
+								</Typography>
+							)}
 						<Feed
-							items={posts}
+							items={data.posts}
 							emptyMessage={
 								query
 									? `No posts found for "${query}"`

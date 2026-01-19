@@ -1,5 +1,5 @@
 import client from './client';
-import type { Post, Topic, Comment } from '../types/models';
+import type { Post, Topic, Comment, SearchResult } from '../types/models';
 
 
 export const fetchAllTopics = async (size?: number, offset?: number): Promise<Topic[]> => {
@@ -54,8 +54,8 @@ export const likePost = async (postId: number): Promise<void> =>{
 export const deletePost = async (postID: number): Promise<void> =>{
     await client.delete(`posts/${postID}`)
 }
-export const searchPost = async (query: string): Promise<Post[]> =>{
-    const response  = await client.get(`search?q=${query}`)
+export const searchGlobal = async (query: string): Promise<SearchResult> =>{
+    const response  = await client.get<SearchResult>(`search?q=${query}`)
     return response.data
 }
 export const deleteComment = async(commentID: number): Promise<void> =>{

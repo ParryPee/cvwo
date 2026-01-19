@@ -8,7 +8,7 @@ interface Topic {
     id: number;
     title: string;
     description: string;
-    created_by: number;
+    user_id: number;
     created_at: string;
     created_by_username: string;
 }
@@ -40,5 +40,9 @@ interface Comment {
     liked_by_user: boolean;
     deleted: boolean;
 }
+interface SearchResult {
+    posts: Post[];
+    topics: Topic[];
+}
 
-export type { User, Topic, Post, Comment };
+export type { User, Topic, Post, Comment, SearchResult };
