@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
@@ -32,12 +33,15 @@ func main() {
 		log.Fatalf("Invalid DB_PORT: %v", err)
 	}
 	dbName := os.Getenv("DB_NAME")
-	frontendURL := os.Getenv("FRONTEND_URL")
+	frontendURLs := os.Getenv("FRONTEND_URL")
 
 	allowedOrigins := []string{"http://localhost:5173"}
 
-	if frontendURL != "" {
-		allowedOrigins = append(allowedOrigins, frontendURL)
+	if frontendURLs != "" {
+		urls := strings.Split(frontendURLs, ",")
+		for _, url := range urls {
+			allowedOrigins = append(allowedOrigins, strings.TrimSpace(url))
+		}
 	}
 	db := database.InitDB(dbUser, dbPass, dbHost, dbPort, dbName)
 	router := routers.SetupRouter(db, jwtkey)
