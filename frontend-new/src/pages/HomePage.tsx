@@ -84,7 +84,6 @@ const HomePage = () => {
 			</Container>
 		);
 	}
-	console.log("HomePage data:", data);
 	return (
 		<Box sx={{ pb: 8 }}>
 			<Paper

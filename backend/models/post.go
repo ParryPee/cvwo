@@ -128,11 +128,10 @@ func (m *PostDB) SearchPost(query string) ([]Post, error) {
 	u.username FROM posts p 
 	JOIN users u ON p.user_id = u.id
 	JOIN topics t ON p.topic_id = t.id
-	WHERE MATCH(p.title,p.content) AGAINST (? IN NATURAL LANGUAGE MODE)
+	WHERE MATCH(p.title,p.content) AGAINST (? IN BOOLEAN MODE)
 	ORDER BY p.created_at DESC
 	`
-
-	rows, err := m.DB.Query(sql_qry, query)
+	rows, err := m.DB.Query(sql_qry, "*"+query+"*")
 	if err != nil {
 		return nil, err
 	}
@@ -145,6 +144,9 @@ func (m *PostDB) SearchPost(query string) ([]Post, error) {
 			return nil, err
 		}
 		posts = append(posts, p)
+	}
+	if posts == nil {
+		posts = []Post{}
 	}
 	return posts, nil
 }

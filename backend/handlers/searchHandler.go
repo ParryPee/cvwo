@@ -4,7 +4,6 @@ import (
 	"backend/models"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -32,7 +31,6 @@ func (m *SearchHandler) SearchPostAndTopics(w http.ResponseWriter, r *http.Reque
 	TopicDB := models.TopicDB{DB: m.DB}
 	topics, err := TopicDB.SearchTopic(query)
 	if err != nil {
-		fmt.Print(err)
 		http.Error(w, "Error searching for topics", http.StatusInternalServerError)
 		return
 	}
