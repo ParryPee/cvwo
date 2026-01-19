@@ -48,8 +48,12 @@ func main() {
 		AllowCredentials: true,
 		Debug:            false,
 	})
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	handler := c.Handler(router)
-	http.ListenAndServe(":8080", handler)
+	http.ListenAndServe(":"+port, handler)
 
 	fmt.Println("Database connected!", db)
 }
