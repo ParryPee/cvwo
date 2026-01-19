@@ -94,7 +94,7 @@ const HomePage = () => {
 					mb: 4,
 					backgroundImage:
 						"linear-gradient(to bottom, var(--color-lavender-grey-700), var(--color-space-indigo-500))",
-					}}
+				}}
 			>
 				<Container maxWidth="md" sx={{ textAlign: "center" }}>
 					<Typography
@@ -361,55 +361,62 @@ const HomePage = () => {
 								</Button>
 							</Paper>
 						</Box>
-						<Box>
-							<Paper
-								sx={{ p: 3, borderRadius: 2 }}
-								variant="outlined"
-							>
-								<Typography
-									variant="h6"
-									gutterBottom
-									sx={{ mb: 2 }}
+						{!query ? (
+							<Box>
+								<Paper
+									sx={{ p: 3, borderRadius: 2 }}
+									variant="outlined"
 								>
-									Top Communities
-								</Typography>
-								{data.topics
-									.sort((a, b) => b.post_count - a.post_count)
-									.slice(0, 3)
-									.map((topic) => (
-										<CardActionArea
-											key={topic.id}
-											sx={{
-												mb: 2,
-												cursor: "pointer",
-												bgcolor:
-													"var(--color-platinum-100)",
-												p: 2,
-												borderRadius: 2,
-											}}
-											onClick={() =>
-												navigate(`/topics/${topic.id}`)
-											}
-										>
-											<Typography
-												variant="subtitle1"
-												fontWeight="bold"
-												noWrap
+									<Typography
+										variant="h6"
+										gutterBottom
+										sx={{ mb: 2 }}
+									>
+										Top Communities
+									</Typography>
+									{data.topics
+										.sort(
+											(a, b) =>
+												b.post_count - a.post_count,
+										)
+										.slice(0, 3)
+										.map((topic) => (
+											<CardActionArea
+												key={topic.id}
+												sx={{
+													mb: 2,
+													cursor: "pointer",
+													bgcolor:
+														"var(--color-platinum-100)",
+													p: 2,
+													borderRadius: 2,
+												}}
+												onClick={() =>
+													navigate(
+														`/topics/${topic.id}`,
+													)
+												}
 											>
-												{topic.title}
-											</Typography>
-											<Typography
-												variant="caption"
-												color="text.secondary"
-												noWrap
-												display="block"
-											>
-												{topic.post_count} posts
-											</Typography>
-										</CardActionArea>
-									))}
-							</Paper>
-						</Box>
+												<Typography
+													variant="subtitle1"
+													fontWeight="bold"
+													noWrap
+												>
+													{topic.title}
+												</Typography>
+												<Typography
+													variant="caption"
+													color="text.secondary"
+													noWrap
+													display="block"
+												>
+													{topic.post_count} posts
+												</Typography>
+											</CardActionArea>
+										))}
+								</Paper>
+							</Box>
+						) : null}
 					</Grid>
 				</Grid>
 			</Container>
