@@ -146,6 +146,8 @@ func (m *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		Expires:  expirationTime,
 		Path:     "/",
 		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
 	})
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(user); err != nil {
@@ -179,6 +181,8 @@ func (m *UserHandler) Logout(w http.ResponseWriter, r *http.Request) { //Logout 
 		Expires:  time.Unix(0, 0),
 		Path:     "/",
 		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
 	})
 	w.WriteHeader(http.StatusNoContent)
 	w.Write([]byte("Logged out successfully"))
