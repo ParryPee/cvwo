@@ -8,8 +8,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func InitDB(username string, password string) *sql.DB {
-	dsn := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/cvwo_forum?parseTime=true", username, password)
+func InitDB(username string, password string, host string, port int, dbName string) *sql.DB {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", username, password, host, port, dbName)
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
@@ -24,10 +25,23 @@ func main() {
 
 	jwtkey := []byte(os.Getenv("JWT_KEY"))
 
-	db := database.InitDB(dbUser, dbPass)
+	dbHost := os.Getenv("DB_HOST")
+	dbPort, err := strconv.Atoi(os.Getenv("DB_PORT"))
+	if err != nil {
+		log.Fatalf("Invalid DB_PORT: %v", err)
+	}
+	dbName := os.Getenv("DB_NAME")
+	frontendURL := os.Getenv("FRONTEND_URL")
+
+	allowedOrigins := []string{"http://localhost:5173"}
+
+	if frontendURL != "" {
+		allowedOrigins = append(allowedOrigins, frontendURL)
+	}
+	db := database.InitDB(dbUser, dbPass, dbHost, dbPort, dbName)
 	router := routers.SetupRouter(db, jwtkey)
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowedOrigins:   allowedOrigins,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
