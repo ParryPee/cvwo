@@ -40,7 +40,14 @@ const Feed = ({ items, emptyMessage = "No results found." }: FeedProps) => {
 						timeout={800}
 						style={{ transitionDelay: `${index * 100}ms` }}
 					>
-						<Grid size={{ xs: 12, sm: 6 }}>
+						<Grid
+							size={{ xs: 12, sm: 6 }}
+							sx={{
+								bgcolor: "var(--color-platinum-100)",
+								p: 1,
+								borderRadius: 2,
+							}}
+						>
 							<DisplayCard
 								title={title}
 								previewText={previewText}

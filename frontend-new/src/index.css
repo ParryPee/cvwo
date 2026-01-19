@@ -1,66 +1,66 @@
+@layer mui, utilities;
+
 @import "tailwindcss";
 
+@tailwind utilities;
 @theme {
-    --color-primary: #1da1f2;
-    --color-secondary: #14171a;
-    --color-accent: #657786;
-    --color-olive-leaf-50: #f4f6ee;
-        --color-olive-leaf-100: #eaeedd;
-        --color-olive-leaf-200: #d5dcbc;
-        --color-olive-leaf-300: #c0cb9a;
-        --color-olive-leaf-400: #aaba78;
-        --color-olive-leaf-500: #95a857;
-        --color-olive-leaf-600: #778745;
-        --color-olive-leaf-700: #5a6534;
-        --color-olive-leaf-800: #3c4323;
-        --color-olive-leaf-900: #1e2211;
-        --color-olive-leaf-950: #15180c;
-    
-        --color-black-forest-50: #f3f7ed;
-        --color-black-forest-100: #e6efdc;
-        --color-black-forest-200: #cddfb9;
-        --color-black-forest-300: #b4d095;
-        --color-black-forest-400: #9cc072;
-        --color-black-forest-500: #83b04f;
-        --color-black-forest-600: #698d3f;
-        --color-black-forest-700: #4e6a2f;
-        --color-black-forest-800: #344620;
-        --color-black-forest-900: #1a2310;
-        --color-black-forest-950: #12190b;
-    
-        --color-cornsilk-50: #fefbe6;
-        --color-cornsilk-100: #fdf7ce;
-        --color-cornsilk-200: #fcef9c;
-        --color-cornsilk-300: #fae76b;
-        --color-cornsilk-400: #f9df39;
-        --color-cornsilk-500: #f7d708;
-        --color-cornsilk-600: #c6ac06;
-        --color-cornsilk-700: #948105;
-        --color-cornsilk-800: #635603;
-        --color-cornsilk-900: #312b02;
-        --color-cornsilk-950: #231e01;
-    
-        --color-sunlit-clay-50: #fbf3ea;
-        --color-sunlit-clay-100: #f6e7d5;
-        --color-sunlit-clay-200: #edceab;
-        --color-sunlit-clay-300: #e4b681;
-        --color-sunlit-clay-400: #db9d57;
-        --color-sunlit-clay-500: #d2852d;
-        --color-sunlit-clay-600: #a86a24;
-        --color-sunlit-clay-700: #7e501b;
-        --color-sunlit-clay-800: #543512;
-        --color-sunlit-clay-900: #2a1b09;
-        --color-sunlit-clay-950: #1d1306;
-    
-        --color-copperwood-50: #fbf2ea;
-        --color-copperwood-100: #f7e4d4;
-        --color-copperwood-200: #eecaaa;
-        --color-copperwood-300: #e6af7f;
-        --color-copperwood-400: #dd9455;
-        --color-copperwood-500: #d57a2a;
-        --color-copperwood-600: #aa6122;
-        --color-copperwood-700: #804919;
-        --color-copperwood-800: #553111;
-        --color-copperwood-900: #2b1808;
-        --color-copperwood-950: #1e1106;
+--color-space-indigo-50: #f0f0f5;
+    --color-space-indigo-100: #e0e1eb;
+    --color-space-indigo-200: #c1c3d7;
+    --color-space-indigo-300: #a2a5c3;
+    --color-space-indigo-400: #8487ae;
+    --color-space-indigo-500: #65699a;
+    --color-space-indigo-600: #51547b;
+    --color-space-indigo-700: #3c3f5d;
+    --color-space-indigo-800: #282a3e;
+    --color-space-indigo-900: #14151f;
+    --color-space-indigo-950: #0e0f16;
+
+    --color-lavender-grey-50: #f0f2f4;
+    --color-lavender-grey-100: #e1e4ea;
+    --color-lavender-grey-200: #c3cad5;
+    --color-lavender-grey-300: #a5afc0;
+    --color-lavender-grey-400: #8894aa;
+    --color-lavender-grey-500: #6a7a95;
+    --color-lavender-grey-600: #556177;
+    --color-lavender-grey-700: #3f495a;
+    --color-lavender-grey-800: #2a313c;
+    --color-lavender-grey-900: #15181e;
+    --color-lavender-grey-950: #0f1115;
+
+    --color-platinum-50: #eff4f5;
+    --color-platinum-100: #dfe8ec;
+    --color-platinum-200: #c0d1d8;
+    --color-platinum-300: #a0bac5;
+    --color-platinum-400: #81a4b1;
+    --color-platinum-500: #618d9e;
+    --color-platinum-600: #4e717e;
+    --color-platinum-700: #3a545f;
+    --color-platinum-800: #27383f;
+    --color-platinum-900: #131c20;
+    --color-platinum-950: #0e1416;
+
+    --color-punch-red-50: #fde7ea;
+    --color-punch-red-100: #fbd0d5;
+    --color-punch-red-200: #f8a0aa;
+    --color-punch-red-300: #f47180;
+    --color-punch-red-400: #f14156;
+    --color-punch-red-500: #ed122b;
+    --color-punch-red-600: #be0e23;
+    --color-punch-red-700: #8e0b1a;
+    --color-punch-red-800: #5f0711;
+    --color-punch-red-900: #2f0409;
+    --color-punch-red-950: #210206;
+
+    --color-flag-red-50: #fee6ea;
+    --color-flag-red-100: #fecdd5;
+    --color-flag-red-200: #fd9bab;
+    --color-flag-red-300: #fc6982;
+    --color-flag-red-400: #fb3758;
+    --color-flag-red-500: #fa052e;
+    --color-flag-red-600: #c80425;
+    --color-flag-red-700: #96031c;
+    --color-flag-red-800: #640212;
+    --color-flag-red-900: #320109;
+    --color-flag-red-950: #230106;
 }

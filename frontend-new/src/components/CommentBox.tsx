@@ -1,11 +1,4 @@
-import {
-	Card,
-	Typography,
-	Box,
-	IconButton,
-	Grid,
-	Button,
-} from "@mui/material";
+import { Card, Typography, Box, IconButton, Grid, Button } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -26,7 +19,7 @@ interface CommentProps {
 }
 
 const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
-	const isDeleted = comment.deleted;
+	const [isDeleted, setIsDeleted] = useState(comment.deleted);
 	const isUpdated = comment.updated_at !== comment.created_at;
 	const [isEditing, setIsEditing] = useState(false);
 	const [content, setContent] = useState(comment.content);
@@ -46,7 +39,9 @@ const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
 						padding: "16px",
 						marginBottom: "16px",
 						position: "relative",
-						backgroundColor: isDeleted ? "#f5f5f5" : "white",
+						backgroundColor: isDeleted
+							? "#f5f5f5"
+							: "var(--color-platinum-100)",
 					}}
 				>
 					{isEditing ? (
@@ -84,7 +79,7 @@ const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
 									textOverflow: "ellipsis",
 								}}
 							>
-								{content}
+								{!isDeleted ? comment.content : "[deleted]"}
 							</Typography>
 
 							{!isDeleted && (
@@ -101,16 +96,18 @@ const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
 									{formatDate(
 										isUpdated
 											? comment.updated_at
-											: comment.created_at
+											: comment.created_at,
 									)}
 									)
 								</Typography>
 							)}
 
 							<Box mt={2}>
-								<Typography variant="caption">
-									{comment.likes || 0} Likes
-								</Typography>
+								{!isDeleted && (
+									<Typography variant="caption">
+										{comment.likes || 0} Likes
+									</Typography>
+								)}
 							</Box>
 
 							{props.isAuthenticated && !isDeleted && (
@@ -161,9 +158,10 @@ const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
 												/>
 											</IconButton>
 											<IconButton
-												onClick={() =>
-													props.onDelete(comment.id)
-												}
+												onClick={() => {
+													props.onDelete(comment.id);
+													setIsDeleted(true);
+												}}
 											>
 												<DeleteIcon
 													sx={{

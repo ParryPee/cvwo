@@ -52,7 +52,10 @@ function TextBox(props: {
 			<IconButton
 				type="submit"
 				color="primary"
-				sx={{ alignSelf: "flex-start", backgroundColor: "lightblue" }}
+				sx={{
+					alignSelf: "flex-start",
+					backgroundColor: "var(--color-olive-leaf-300)",
+				}}
 			>
 				<SendIcon />
 			</IconButton>

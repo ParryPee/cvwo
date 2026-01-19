@@ -49,16 +49,32 @@ const LoginPage: React.FC = () => {
 	};
 
 	return (
-		<Container maxWidth="xs">
+		<Container
+			maxWidth={false}
+			sx={{
+				backgroundImage:
+					"linear-gradient(to bottom, var(--color-lavender-grey-700), var(--color-space-indigo-500))",
+			}}
+		>
 			<Box
 				sx={{
-					marginTop: 8,
 					display: "flex",
 					flexDirection: "column",
 					alignItems: "center",
+					padding: "32px",
 				}}
+				maxWidth="700px"
+				margin="0 auto"
 			>
-				<Paper elevation={3} sx={{ padding: 4, width: "100%" }}>
+				<Paper
+					elevation={3}
+					sx={{
+						padding: 4,
+						width: "100%",
+						bgcolor: "var(--color-platinum-100)",
+						borderRadius: 4,
+					}}
+				>
 					<Typography
 						component="h1"
 						variant="h5"
@@ -92,7 +108,18 @@ const LoginPage: React.FC = () => {
 							type="submit"
 							fullWidth
 							variant="contained"
-							sx={{ mt: 3, mb: 2 }}
+							sx={{
+								mb: 4,
+								backgroundColor: "var(--color-flag-red-500)",
+								":hover": {
+									backgroundColor:
+										"var(--color-flag-red-600)",
+								},
+								borderRadius: 4,
+								maxWidth: "150px",
+								margin: "20px auto",
+								display: "block",
+							}}
 							disabled={loading}
 						>
 							{loading ? "Registering" : "Register"}
@@ -101,9 +128,19 @@ const LoginPage: React.FC = () => {
 
 					<Button
 						type="button"
-						fullWidth
 						variant="outlined"
-						sx={{ mt: 1 }}
+						fullWidth
+						sx={{
+							backgroundColor: "var(--color-flag-red-500)",
+							":hover": {
+								backgroundColor: "var(--color-flag-red-600)",
+							},
+							borderRadius: 4,
+							maxWidth: "150px",
+							margin: "0 auto",
+							display: "block",
+							color: "white",
+						}}
 						onClick={() => navigate("/login")}
 					>
 						Login

@@ -89,13 +89,12 @@ const HomePage = () => {
 			<Paper
 				elevation={0}
 				sx={{
-					bgcolor: "var(--color-sunlit-clay-300)",
-					color: "primary.contrastText",
 					pt: 8,
 					pb: 8,
 					mb: 4,
-					borderRadius: 0,
-				}}
+					backgroundImage:
+						"linear-gradient(to bottom, var(--color-lavender-grey-700), var(--color-space-indigo-500))",
+					}}
 			>
 				<Container maxWidth="md" sx={{ textAlign: "center" }}>
 					<Typography
@@ -138,7 +137,10 @@ const HomePage = () => {
 								borderRadius: "50px",
 								px: 4,
 								m: 0.5,
-								bgcolor: "var(--color-copperwood-500)",
+								bgcolor: "var(--color-flag-red-600)",
+								":hover": {
+									bgcolor: "var(--color-flag-red-700)",
+								},
 							}}
 						>
 							Search
@@ -195,10 +197,23 @@ const HomePage = () => {
 
 							{isAuthenticated && (
 								<Button
-									variant="outlined"
-									startIcon={<AddIcon />}
+									variant="contained"
+									startIcon={
+										<AddIcon
+											sx={{
+												bgcolor:
+													"var(--color-flag-red-700)",
+												color: "white",
+												borderRadius: "50%",
+											}}
+										/>
+									}
 									onClick={() => navigate(`/topics/create`)}
 									size="small"
+									sx={{
+										bgcolor: "var(--color-flag-red-600)",
+										borderRadius: 5,
+									}}
 								>
 									New Topic
 								</Button>
@@ -313,13 +328,21 @@ const HomePage = () => {
 					</Grid>
 
 					<Grid size={{ xs: 12, md: 4 }}>
-						<Box sx={{ position: "sticky", top: 24 }}>
+						<Box
+							sx={{
+								position: "sticky",
+								bgcolor: "var(--color-platinum-100)",
+								p: 1,
+								mb: 4,
+								borderRadius: 2,
+							}}
+						>
 							<Paper
-								sx={{ p: 3, mb: 3, borderRadius: 2 }}
+								sx={{ borderRadius: 2, p: 3 }}
 								variant="outlined"
 							>
 								<Typography
-									variant="body2"
+									variant="body1"
 									color="text.secondary"
 								>
 									Welcome to the forum, join in the discussion
@@ -331,7 +354,7 @@ const HomePage = () => {
 									onClick={() => navigate("/topics/create")}
 									sx={{
 										mt: 2,
-										bgcolor: "var(--color-copperwood-500)",
+										bgcolor: "var(--color-flag-red-600)",
 									}}
 								>
 									Start your own topic!
@@ -359,6 +382,10 @@ const HomePage = () => {
 											sx={{
 												mb: 2,
 												cursor: "pointer",
+												bgcolor:
+													"var(--color-platinum-100)",
+												p: 2,
+												borderRadius: 2,
 											}}
 											onClick={() =>
 												navigate(`/topics/${topic.id}`)

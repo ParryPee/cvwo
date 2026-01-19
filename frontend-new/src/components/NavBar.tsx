@@ -63,7 +63,7 @@ function ResponsiveAppBar() {
 
 	return (
 		<AppBar position="static">
-			<Container maxWidth={false} className="bg-sunlit-clay-300">
+			<Container maxWidth={false} className="bg-lavender-grey-700">
 				<Toolbar disableGutters>
 					<Typography
 						variant="h6"
@@ -164,7 +164,16 @@ function ResponsiveAppBar() {
 								component={Link}
 								to={page.link}
 								onClick={handleCloseNavMenu}
-								sx={{ my: 2, color: "white", display: "block" }}
+								sx={{
+									my: 2,
+									color: "white",
+									display: "block",
+									mr: 2,
+									borderRadius: 2,
+									"&:hover": {
+										bgcolor: "var(--color-flag-red-500)",
+									},
+								}}
 							>
 								{page.name}
 							</Button>
@@ -176,7 +185,7 @@ function ResponsiveAppBar() {
 								mr: 2,
 								display: "flex",
 								alignItems: "center",
-								backgroundColor: "var(--color-cornsilk-100)",
+								backgroundColor: "var(--color-platinum-100)",
 								borderRadius: 4,
 								paddingX: 1,
 							}}
@@ -191,8 +200,8 @@ function ResponsiveAppBar() {
 									borderRadius: "4px",
 									border: "none",
 									outline: "none",
+									color: "var(--color-lavender-grey-900)",
 								}}
-								className="text-black"
 							/>
 						</Box>
 					)}

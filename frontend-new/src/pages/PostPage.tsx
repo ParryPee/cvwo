@@ -40,7 +40,7 @@ const PostPage = () => {
 	const [rootComments, setRootComments] = useState<CommentNode[]>([]);
 	const handleSubmit = async (
 		text: string,
-		parentId: number | null = null
+		parentId: number | null = null,
 	) => {
 		if (!isAuthenticated || !postId) {
 			navigate("/login");
@@ -83,7 +83,7 @@ const PostPage = () => {
 						};
 					}
 					return comment;
-				})
+				}),
 			);
 		} catch (error) {
 			console.error("Failed to like comment:", error);
@@ -141,7 +141,7 @@ const PostPage = () => {
 						};
 					}
 					return c;
-				})
+				}),
 			);
 		} catch (error) {
 			console.error("Failed to delete comment", error);
@@ -220,12 +220,27 @@ const PostPage = () => {
 	}
 	return (
 		<Container
+			maxWidth={false}
+			disableGutters
 			sx={{
-				mt: 4,
+				width: "100%",
 				padding: "16px",
+				backgroundImage:
+					"linear-gradient(to bottom, var(--color-lavender-grey-700), var(--color-space-indigo-500))",
 			}}
 		>
-			<Box sx={{ border: "1px solid #ccc", borderRadius: "8px", p: 2 }}>
+			<Box
+				sx={{
+					border: "1px solid #ccc",
+					borderRadius: 4,
+					p: 2,
+					width: "100%",
+					maxWidth: "960px",
+					margin: "0 auto",
+					mb: 4,
+					bgcolor: "var(--color-platinum-300)",
+				}}
+			>
 				<Box
 					sx={{
 						display: "flex",
@@ -252,11 +267,7 @@ const PostPage = () => {
 					{timeAgo(post.created_at)} (on {formatDate(post.created_at)}
 					)
 				</Typography>
-				<Typography
-					variant="subtitle1"
-					color="text.secondary"
-					gutterBottom
-				>
+				<Typography variant="subtitle1" color="black" gutterBottom>
 					{post.content}
 				</Typography>
 				<Box
@@ -316,7 +327,17 @@ const PostPage = () => {
 				</Box>
 			</Box>
 
-			<Box mt={4}>
+			<Box
+				mt={4}
+				sx={{
+					p: 2,
+					width: "100%",
+					maxWidth: "960px",
+					margin: "0 auto",
+					bgcolor: "var(--color-platinum-200)",
+					borderRadius: 4,
+				}}
+			>
 				{isAuthenticated && (
 					<TextBox
 						label="Add a comment..."

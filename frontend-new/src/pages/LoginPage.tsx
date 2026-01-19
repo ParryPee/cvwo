@@ -42,16 +42,33 @@ const LoginPage: React.FC = () => {
 	};
 
 	return (
-		<Container maxWidth="xs">
+		<Container
+			maxWidth={false}
+			disableGutters
+			sx={{
+				backgroundImage:
+					"linear-gradient(to bottom, var(--color-lavender-grey-700), var(--color-space-indigo-500))",
+			}}
+		>
 			<Box
 				sx={{
-					marginTop: 8,
 					display: "flex",
 					flexDirection: "column",
 					alignItems: "center",
+					padding: "32px",
 				}}
+				maxWidth="700px"
+				margin="0 auto"
 			>
-				<Paper elevation={3} sx={{ padding: 4, width: "100%" }}>
+				<Paper
+					elevation={3}
+					sx={{
+						padding: 4,
+						width: "100%",
+						bgcolor: "var(--color-platinum-100)",
+						borderRadius: 4,
+					}}
+				>
 					<Typography
 						component="h1"
 						variant="h5"
@@ -83,9 +100,21 @@ const LoginPage: React.FC = () => {
 
 						<Button
 							type="submit"
-							fullWidth
 							variant="contained"
-							sx={{ mt: 3, mb: 2 }}
+							sx={{
+								mt: 3,
+								mb: 2,
+								borderRadius: 4,
+								bgcolor: "var(--color-flag-red-500)",
+								":hover": {
+									backgroundColor:
+										"var(--color-flag-red-600)",
+								},
+								color: "white",
+								margin: "0 auto",
+								display: "block",
+								maxWidth: "150px",
+							}}
 							disabled={loading}
 						>
 							{loading ? "Signing in..." : "Sign In"}

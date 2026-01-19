@@ -13,6 +13,7 @@ import {
 	CardActionArea,
 	Alert,
 	Button,
+	Divider,
 } from "@mui/material";
 
 const TopicPage = () => {
@@ -65,12 +66,26 @@ const TopicPage = () => {
 	}
 	return (
 		<Container
+			maxWidth={false}
+			disableGutters
 			sx={{
-				mt: 4,
+				width: "100%",
 				padding: "16px",
+				backgroundImage:
+					"linear-gradient(to bottom, var(--color-lavender-grey-700), var(--color-space-indigo-500))",
 			}}
 		>
-			<Box sx={{ border: "1px solid #ccc", borderRadius: "8px", p: 2 }}>
+			<Box
+				sx={{
+					border: "1px solid #ccc",
+					borderRadius: 4,
+					p: 2,
+					bgcolor: "var(--color-platinum-300)",
+					maxWidth: "960px",
+					margin: "0 auto",
+					mb: 4,
+				}}
+			>
 				<Typography variant="h4" gutterBottom>
 					{topic.title}
 				</Typography>
@@ -83,7 +98,7 @@ const TopicPage = () => {
 				</Typography>
 			</Box>
 
-			<Box mt={4}>
+			<Box mt={4} sx={{ maxWidth: "960px", margin: "0 auto", mt: 4 }}>
 				<Box
 					sx={{
 						display: "flex",
@@ -96,7 +111,14 @@ const TopicPage = () => {
 					{isAuthenticated && (
 						<Button
 							variant="contained"
-							color="primary"
+							sx={{
+								backgroundColor: "var(--color-flag-red-500)",
+								borderRadius: 4,
+								":hover": {
+									backgroundColor:
+										"var(--color-flag-red-600)",
+								},
+							}}
 							onClick={() =>
 								navigate(`/topics/${topicId}/create`)
 							}
@@ -105,17 +127,26 @@ const TopicPage = () => {
 						</Button>
 					)}
 				</Box>
+				<Divider sx={{ mb: 2 }} />
 				{!posts || posts.length === 0 ? (
 					<Typography variant="body2" color="text.secondary" mt={2}>
 						No posts yet. Be the first to post!
 					</Typography>
 				) : (
 					posts.map((post) => (
-						<Grid key={post.id} size={{ xs: 12, sm: 6 }}>
+						<Grid
+							key={post.id}
+							size={{ xs: 12, sm: 6 }}
+							sx={{
+								mb: 2,
+								bgcolor: "var(--color-platinum-200)",
+								borderRadius: 4,
+							}}
+						>
 							<CardActionArea
 								sx={{
 									border: "1px solid #ddd",
-									borderRadius: "8px",
+									borderRadius: 4,
 									padding: "16px",
 									marginBottom: "16px",
 								}}

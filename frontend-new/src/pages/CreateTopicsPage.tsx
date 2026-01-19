@@ -44,8 +44,24 @@ const CreateTopicsPage = () => {
 	};
 
 	return (
-		<Container maxWidth="md" sx={{ mt: 4 }}>
-			<Paper sx={{ p: 4 }}>
+		<Container
+			sx={{
+				backgroundImage:
+					"linear-gradient(to bottom, var(--color-lavender-grey-700), var(--color-space-indigo-500))",
+			}}
+			maxWidth={false}
+			disableGutters
+		>
+			<Paper
+				sx={{
+					p: 4,
+					maxWidth: "960px",
+					margin: "0 auto",
+					bgcolor: "var(--color-platinum-100)",
+					borderRadius: 4,
+					pt: 6,
+				}}
+			>
 				<Typography variant="h5" gutterBottom>
 					Create a New Topic
 				</Typography>
@@ -76,7 +92,15 @@ const CreateTopicsPage = () => {
 					<Button
 						type="submit"
 						variant="contained"
-						color="primary"
+						sx={{
+							backgroundColor: "var(--color-flag-red-500)",
+							borderRadius: 4,
+							":hover": {
+								backgroundColor: "var(--color-flag-red-600)",
+							},
+							maxWidth: "150px",
+							margin: "0 auto",
+						}}
 						disabled={loading}
 					>
 						{loading ? "Creating..." : "Create Topic"}

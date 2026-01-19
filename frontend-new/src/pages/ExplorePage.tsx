@@ -34,12 +34,18 @@ const ExploreTopicsPage = () => {
 			</Typography>
 			<Grid container spacing={3}>
 				{topics.map((topic) => (
-					<Grid size={{ xs: 12, sm: 6, md: 4 }} key={topic.id}>
+					<Grid
+						sx={{ p: 1 }}
+						size={{ xs: 12, sm: 6, md: 4 }}
+						key={topic.id}
+					>
 						<Card
 							sx={{
 								height: "100%",
 								display: "flex",
 								flexDirection: "column",
+								borderRadius: 4,
+								bgcolor: "var(--color-platinum-100)",
 							}}
 						>
 							<CardContent sx={{ flexGrow: 1 }}>
@@ -66,6 +72,14 @@ const ExploreTopicsPage = () => {
 									size="small"
 									component={Link}
 									to={`/topics/${topic.id}`}
+									sx={{
+										borderRadius: 2,
+										color: "black",
+										":hover": {
+											bgcolor:
+												"var(--color-flag-red-500)",
+										},
+									}}
 								>
 									View Posts
 								</Button>

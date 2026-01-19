@@ -50,8 +50,24 @@ const CreatePostPage = () => {
 	};
 
 	return (
-		<Container maxWidth="md" sx={{ mt: 4 }}>
-			<Paper sx={{ p: 4 }}>
+		<Container
+			maxWidth={false}
+			disableGutters
+			sx={{
+				backgroundImage:
+					"linear-gradient(to bottom, var(--color-lavender-grey-700), var(--color-space-indigo-500))",
+			}}
+		>
+			<Paper
+				sx={{
+					p: 4,
+					maxWidth: "960px",
+					margin: "0 auto",
+					bgcolor: "var(--color-platinum-100)",
+					borderRadius: 4,
+					pt: 6,
+				}}
+			>
 				<Typography variant="h5" gutterBottom>
 					Create a New Post
 				</Typography>
@@ -93,6 +109,15 @@ const CreatePostPage = () => {
 							variant="outlined"
 							onClick={() => navigate(-1)}
 							disabled={loading}
+							sx={{
+								borderRadius: 4,
+								bgcolor: "var(--color-flag-red-500)",
+								":hover": {
+									backgroundColor:
+										"var(--color-flag-red-600)",
+								},
+								color: "white",
+							}}
 						>
 							Cancel
 						</Button>
@@ -100,6 +125,15 @@ const CreatePostPage = () => {
 							type="submit"
 							variant="contained"
 							disabled={loading || !content.trim()}
+							sx={{
+								borderRadius: 4,
+								bgcolor: "var(--color-flag-red-500)",
+								":hover": {
+									backgroundColor:
+										"var(--color-flag-red-600)",
+								},
+								color: "white",
+							}}
 						>
 							{loading ? "Posting..." : "Submit Post"}
 						</Button>
