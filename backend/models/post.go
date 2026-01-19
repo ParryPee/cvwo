@@ -124,9 +124,10 @@ func (m *PostDB) LikePost(postID, userID int64) error {
 
 }
 func (m *PostDB) SearchPost(query string) ([]Post, error) {
-	sql_qry := `SELECT p.id, p.title, p.content, p.created_at, p.updated_at, p.topic_id, p.user_id,
+	sql_qry := `SELECT p.id, p.title, p.content, p.created_at, p.updated_at, p.topic_id, t.title, p.user_id,
 	u.username FROM posts p 
 	JOIN users u ON p.user_id = u.id
+	JOIN topics t ON p.topic_id = t.id
 	WHERE MATCH(p.title,p.content) AGAINST (? IN NATURAL LANGUAGE MODE)
 	ORDER BY p.created_at DESC
 	`
@@ -140,7 +141,7 @@ func (m *PostDB) SearchPost(query string) ([]Post, error) {
 	for rows.Next() {
 		var p Post
 		if err := rows.Scan(&p.ID, &p.Title, &p.Content, &p.CreatedAt,
-			&p.UpdatedAt, &p.TopicID, &p.UserID, &p.CreatedByUsername); err != nil {
+			&p.UpdatedAt, &p.TopicID, &p.TopicTitle, &p.UserID, &p.CreatedByUsername); err != nil {
 			return nil, err
 		}
 		posts = append(posts, p)
