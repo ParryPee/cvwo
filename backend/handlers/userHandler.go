@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
@@ -26,6 +28,9 @@ type Claims struct {
 	jwt.RegisteredClaims       // Standard JWT fields like Expiry
 }
 
+func containsWhitespace(s string) bool {
+	return strings.IndexFunc(s, unicode.IsSpace) != -1
+}
 func (m *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var reqBody struct { //Request body we expect to receive
 		Username string `json:"username"`
@@ -39,7 +44,15 @@ func (m *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Username is required", http.StatusBadRequest)
 		return
 	}
-
+	//check username for white spaces and length
+	if len(reqBody.Username) > 15 || len(reqBody.Username) < 7 {
+		http.Error(w, "Username must be between 7 and 15 characters", http.StatusBadRequest)
+		return
+	}
+	if containsWhitespace(reqBody.Username) {
+		http.Error(w, "Username cannot contain whitespace", http.StatusBadRequest)
+		return
+	}
 	UserDB := models.UserDB{DB: m.DB}
 	row, err := UserDB.DB.Query("SELECT id FROM users WHERE username = ?", reqBody.Username)
 	if err != nil {
