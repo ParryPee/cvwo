@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { fetchAllPosts, searchGlobal } from "../api/forum";
-import type { SearchResult } from "../types/models";
+import { fetchAllPosts, fetchAllTopics, searchGlobal } from "../api/forum";
+import type { SearchResult, Topic } from "../types/models";
 import {
 	Container,
 	Grid,
@@ -61,8 +61,9 @@ const HomePage = () => {
 						data.posts = [];
 					}
 				} else {
-					const data = await fetchAllPosts(LIMIT, 0);
-					setData({ posts: data, topics: [] });
+					const postData = await fetchAllPosts(LIMIT, 0);
+					const topicData: Topic[] = await fetchAllTopics();
+					setData({ posts: postData, topics: topicData });
 				}
 			} catch (error) {
 				console.error("Failed to load data", error);
@@ -83,7 +84,7 @@ const HomePage = () => {
 			</Container>
 		);
 	}
-
+	console.log("HomePage data:", data);
 	return (
 		<Box sx={{ pb: 8 }}>
 			<Paper
@@ -327,6 +328,51 @@ const HomePage = () => {
 								>
 									Start your own topic!
 								</Button>
+							</Paper>
+						</Box>
+						<Box>
+							<Paper
+								sx={{ p: 3, borderRadius: 2 }}
+								variant="outlined"
+							>
+								<Typography
+									variant="h6"
+									gutterBottom
+									sx={{ mb: 2 }}
+								>
+									Top Communities
+								</Typography>
+								{data.topics
+									.sort((a, b) => b.post_count - a.post_count)
+									.slice(0, 3)
+									.map((topic) => (
+										<CardActionArea
+											key={topic.id}
+											sx={{
+												mb: 2,
+												cursor: "pointer",
+											}}
+											onClick={() =>
+												navigate(`/topics/${topic.id}`)
+											}
+										>
+											<Typography
+												variant="subtitle1"
+												fontWeight="bold"
+												noWrap
+											>
+												{topic.title}
+											</Typography>
+											<Typography
+												variant="caption"
+												color="text.secondary"
+												noWrap
+												display="block"
+											>
+												{topic.post_count} posts
+											</Typography>
+										</CardActionArea>
+									))}
 							</Paper>
 						</Box>
 					</Grid>

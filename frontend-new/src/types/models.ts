@@ -11,6 +11,7 @@ interface Topic {
     user_id: number;
     created_at: string;
     created_by_username: string;
+    post_count: number;
 }
 
 interface Post {

@@ -14,6 +14,8 @@ type Topic struct {
 
 	UserID            int64  `json:"created_by"`
 	CreatedByUsername string `json:"created_by_username"`
+
+	PostCount int64 `json:"post_count"`
 }
 
 type TopicDB struct {
@@ -22,9 +24,11 @@ type TopicDB struct {
 
 func (m *TopicDB) All() ([]Topic, error) {
 	rows, err := m.DB.Query(`
-		SELECT t.id, t.title, t.description, t.created_at, t.user_id, u.username
+		SELECT t.id, t.title, t.description, t.created_at, t.user_id, u.username, COUNT(p.id) as post_count
 		FROM topics t
-		JOIN users u ON t.user_id = u.id`)
+		JOIN users u ON t.user_id = u.id
+		LEFT JOIN posts p ON t.id = p.topic_id
+		GROUP BY t.id, t.title, t.description, t.created_at, t.user_id, u.username`)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +36,7 @@ func (m *TopicDB) All() ([]Topic, error) {
 	var topics []Topic
 	for rows.Next() {
 		var t Topic
-		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.UserID, &t.CreatedByUsername); err != nil {
+		if err := rows.Scan(&t.ID, &t.Title, &t.Description, &t.CreatedAt, &t.UserID, &t.CreatedByUsername, &t.PostCount); err != nil {
 			return nil, err
 		}
 		topics = append(topics, t)
