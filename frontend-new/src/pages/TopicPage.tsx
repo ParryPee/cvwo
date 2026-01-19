@@ -22,7 +22,7 @@ const TopicPage = () => {
 	const [loading, setLoading] = useState(true);
 	const [posts, setPosts] = useState<Post[]>([]);
 	const [error, setError] = useState<string | null>(null);
-	const { isAuthenticated, user } = useAuth();
+	const { isAuthenticated } = useAuth();
 
 	useEffect(() => {
 		const loadTopicAndPosts = async () => {
@@ -141,7 +141,7 @@ const TopicPage = () => {
 									variant="caption"
 									color="text.secondary"
 								>
-									Posted by • {user?.username} •{" "}
+									Posted by • {post.created_by_username} •{" "}
 									{timeAgo(post.created_at)} (on{" "}
 									{formatDate(post.created_at)})
 								</Typography>
