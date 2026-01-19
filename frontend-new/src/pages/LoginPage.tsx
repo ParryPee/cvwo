@@ -11,6 +11,7 @@ import {
 	Paper,
 	Link,
 } from "@mui/material";
+import { AxiosError } from "axios";
 
 const LoginPage: React.FC = () => {
 	const { login } = useAuth();
@@ -33,7 +34,7 @@ const LoginPage: React.FC = () => {
 		} catch (err) {
 			console.error(err);
 			setError(
-				"Failed to log in. Please try again. Please check your username."
+				err instanceof AxiosError ? err.response?.data : "Login failed",
 			);
 		} finally {
 			setLoading(false);

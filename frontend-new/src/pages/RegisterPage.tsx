@@ -11,6 +11,7 @@ import {
 	Alert,
 	Paper,
 } from "@mui/material";
+import { AxiosError } from "axios";
 
 const LoginPage: React.FC = () => {
 	const { isAuthenticated, login } = useAuth();
@@ -32,12 +33,16 @@ const LoginPage: React.FC = () => {
 
 		try {
 			await register(username);
-            await login(username);
+			await login(username);
 
 			navigate("/");
 		} catch (err) {
 			console.error(err);
-			setError("Failed to register. Please try again.");
+			setError(
+				err instanceof AxiosError
+					? err.response?.data
+					: "Registration failed",
+			);
 		} finally {
 			setLoading(false);
 		}
