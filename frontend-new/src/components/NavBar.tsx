@@ -63,7 +63,7 @@ function ResponsiveAppBar() {
 
 	return (
 		<AppBar position="static">
-			<Container maxWidth="xl">
+			<Container maxWidth={false} className="bg-sunlit-clay-300">
 				<Toolbar disableGutters>
 					<Typography
 						variant="h6"
@@ -176,6 +176,9 @@ function ResponsiveAppBar() {
 								mr: 2,
 								display: "flex",
 								alignItems: "center",
+								backgroundColor: "var(--color-cornsilk-100)",
+								borderRadius: 4,
+								paddingX: 1,
 							}}
 						>
 							<input
@@ -189,6 +192,7 @@ function ResponsiveAppBar() {
 									border: "none",
 									outline: "none",
 								}}
+								className="text-black"
 							/>
 						</Box>
 					)}

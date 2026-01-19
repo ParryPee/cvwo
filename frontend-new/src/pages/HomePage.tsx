@@ -89,7 +89,7 @@ const HomePage = () => {
 			<Paper
 				elevation={0}
 				sx={{
-					bgcolor: "primary.main",
+					bgcolor: "var(--color-sunlit-clay-300)",
 					color: "primary.contrastText",
 					pt: 8,
 					pb: 8,
@@ -134,7 +134,12 @@ const HomePage = () => {
 						<Button
 							type="submit"
 							variant="contained"
-							sx={{ borderRadius: "50px", px: 4, m: 0.5 }}
+							sx={{
+								borderRadius: "50px",
+								px: 4,
+								m: 0.5,
+								bgcolor: "var(--color-copperwood-500)",
+							}}
 						>
 							Search
 						</Button>
@@ -324,6 +329,10 @@ const HomePage = () => {
 									fullWidth
 									variant="contained"
 									onClick={() => navigate("/topics/create")}
+									sx={{
+										mt: 2,
+										bgcolor: "var(--color-copperwood-500)",
+									}}
 								>
 									Start your own topic!
 								</Button>

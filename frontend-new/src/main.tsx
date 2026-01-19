@@ -2,9 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./app";
 import { AuthProvider } from "./context/AuthContext";
+import "./index.css";
+import { StrictMode } from "react";
 
 const root = ReactDOM.createRoot(
-	document.getElementById("root") as HTMLElement
+	document.getElementById("root") as HTMLElement,
 );
 
 root.render(
@@ -12,5 +14,5 @@ root.render(
 		<AuthProvider>
 			<App />
 		</AuthProvider>
-	</React.StrictMode>
+	</React.StrictMode>,
 );
