@@ -11,7 +11,7 @@ const defaultContextValue: AuthContextType = {
 	user: null,
 	isAuthenticated: false,
 	isLoading: true,
-	login: async (username: string) => {},
+	login: async () => {},
 	logout: () => {},
 };
 
