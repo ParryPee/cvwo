@@ -213,7 +213,14 @@ function ResponsiveAppBar() {
 								component={Link}
 								to="/login"
 								variant="outlined"
-								sx={{ borderColor: "white", color: "white" }}
+								sx={{
+									borderColor: "white",
+									color: "white",
+									bgcolor: "var(--color-flag-red-500)",
+									"&:hover": {
+										bgcolor: "var(--color-flag-red-600)",
+									},
+								}}
 							>
 								Login
 							</Button>
