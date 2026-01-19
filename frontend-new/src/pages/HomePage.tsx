@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchAllPosts, searchGlobal } from "../api/forum";
-import type { Post, Topic, SearchResult } from "../types/models";
+import type { SearchResult } from "../types/models";
 import {
 	Container,
 	Grid,
@@ -83,7 +83,6 @@ const HomePage = () => {
 			</Container>
 		);
 	}
-	console.log(data.topics);
 
 	return (
 		<Box sx={{ pb: 8 }}>
