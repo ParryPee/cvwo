@@ -191,7 +191,7 @@ const PostPage = () => {
 				}
 				const postData = await fetchPostById(postIdNum);
 				const commentsData = await fetchCommentsByPostId(postIdNum);
-				const tree = buildCommentTree(commentsData);
+				const tree = commentsData ? buildCommentTree(commentsData) : [];
 				setRootComments(tree);
 				setPost(postData);
 				setComments(commentsData);
