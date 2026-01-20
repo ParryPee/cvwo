@@ -17,11 +17,12 @@ type Post struct { //Post Class, holds important attributes in our Post object
 
 	UpdatedAt time.Time `json:"updated_at"`
 
-	TopicID    int64  `json:"topic_id"`
-	TopicTitle string `json:"topic_title"`
+	TopicID int64 `json:"topic_id"`
 
 	UserID int64 `json:"user_id"`
 
+	//Additional fields
+	TopicTitle        string `json:"topic_title"`
 	CreatedByUsername string `json:"created_by_username"`
 	LikedByUser       bool   `json:"liked_by_user"`
 }

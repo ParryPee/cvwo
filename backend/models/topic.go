@@ -12,10 +12,11 @@ type Topic struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 
-	UserID            int64  `json:"created_by"`
-	CreatedByUsername string `json:"created_by_username"`
+	UserID int64 `json:"created_by"`
 
-	PostCount int64 `json:"post_count"`
+	//Additional fields
+	CreatedByUsername string `json:"created_by_username"`
+	PostCount         int64  `json:"post_count"`
 }
 
 type TopicDB struct {

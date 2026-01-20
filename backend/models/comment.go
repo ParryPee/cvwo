@@ -17,13 +17,14 @@ type Comment struct {
 
 	PostID int64 `json:"post_id"`
 
-	UserID int64 `json:"user_id"`
-
-	CreatedByUsername string `json:"created_by_username"`
+	UserID  int64 `json:"user_id"`
+	Deleted bool  `json:"deleted"`
 
 	ParentCommentID sql.NullInt64 `json:"parent_comment_id,omitempty"`
-	LikedByUser     bool          `json:"liked_by_user"`
-	Deleted         bool          `json:"deleted"`
+	//Added field to indicate if the comment is liked by the user making the request
+	LikedByUser bool `json:"liked_by_user"`
+	//Username of the comment creator
+	CreatedByUsername string `json:"created_by_username"`
 }
 
 // DB instance to make queries to

@@ -6,6 +6,7 @@ import {
 	DialogActions,
 	TextField,
 	Button,
+	Box,
 } from "@mui/material";
 
 interface EditPostModalProps {
@@ -48,46 +49,62 @@ const EditPostModal = ({
 	};
 	return (
 		<Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-			<DialogTitle>Edit Post</DialogTitle>
-			<DialogContent>
-				<TextField
-					autoFocus
-					margin="dense"
-					label="Content"
-					fullWidth
-					multiline
-					rows={6}
-					variant="outlined"
-					value={title}
-					onChange={(e) => setTitle(e.target.value)}
-					disabled={loading}
-				/>
-				<TextField
-					autoFocus
-					margin="dense"
-					label="Content"
-					fullWidth
-					multiline
-					rows={6}
-					variant="outlined"
-					value={content}
-					onChange={(e) => setContent(e.target.value)}
-					disabled={loading}
-				/>
-			</DialogContent>
-			<DialogActions>
-				<Button onClick={onClose} color="secondary" disabled={loading}>
-					Cancel
-				</Button>
-				<Button
-					onClick={handleSubmit}
-					variant="contained"
-					color="primary"
-					disabled={loading || !content.trim()}
-				>
-					{loading ? "Saving..." : "Save"}
-				</Button>
-			</DialogActions>
+			<Box
+				sx={{
+					bgcolor: "var(--color-lavender-grey-300)",
+				}}
+			>
+				<DialogTitle>Edit Post</DialogTitle>
+				<DialogContent>
+					<TextField
+						autoFocus
+						margin="dense"
+						label="Content"
+						fullWidth
+						multiline
+						rows={6}
+						variant="outlined"
+						value={title}
+						onChange={(e) => setTitle(e.target.value)}
+						disabled={loading}
+					/>
+					<TextField
+						autoFocus
+						margin="dense"
+						label="Content"
+						fullWidth
+						multiline
+						rows={6}
+						variant="outlined"
+						value={content}
+						onChange={(e) => setContent(e.target.value)}
+						disabled={loading}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button
+						onClick={onClose}
+						disabled={loading}
+						sx={{
+							bgcolor: "var(--color-lavender-grey-500)",
+							color: "white",
+						}}
+					>
+						Cancel
+					</Button>
+					<Button
+						onClick={handleSubmit}
+						variant="contained"
+						color="primary"
+						disabled={loading || !content.trim()}
+						sx={{
+							bgcolor: "var(--color-lavender-grey-500)",
+						}}
+					>
+						{loading ? "Saving..." : "Save"}
+					</Button>
+				</DialogActions>
+			</Box>
 		</Dialog>
 	);
 };
