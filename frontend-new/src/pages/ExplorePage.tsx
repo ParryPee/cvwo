@@ -64,7 +64,7 @@ const ExploreTopicsPage = () => {
 									display="block"
 									sx={{ mt: 2 }}
 								>
-									Created by: {topic.created_by_username}
+									Created by: {topic.username}
 								</Typography>
 							</CardContent>
 							<CardActions>
