@@ -91,7 +91,7 @@ const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
 									textOverflow: "ellipsis",
 								}}
 							>
-								{!isDeleted ? comment.content : "[deleted]"}
+								{!isDeleted ? content : "[deleted]"}
 							</Typography>
 
 							{!isDeleted && (
@@ -184,15 +184,15 @@ const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
 													}}
 												/>
 											</IconButton>
-											<IconButton
-												onClick={() =>
-													setIsReplying(!isReplying)
-												}
-											>
-												<AddCommentIcon />
-											</IconButton>
 										</>
 									)}
+									<IconButton
+										onClick={() =>
+											setIsReplying(!isReplying)
+										}
+									>
+										<AddCommentIcon />
+									</IconButton>
 								</Box>
 							)}
 						</>

@@ -106,7 +106,7 @@ const HomePage = () => {
 						Welcome to the Community
 					</Typography>
 					<Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
-						Search for posts! Or select a topic to get started.
+						Search for posts or topics! Or visit our explore page!
 					</Typography>
 
 					<Paper

@@ -54,7 +54,7 @@ const EditModal = ({
 					bgcolor: "var(--color-lavender-grey-300)",
 				}}
 			>
-				<DialogTitle>Edit Post</DialogTitle>
+				<DialogTitle>Edit</DialogTitle>
 				<DialogContent>
 					<TextField
 						autoFocus
