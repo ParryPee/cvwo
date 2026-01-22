@@ -65,7 +65,7 @@ func (m *PostHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 	//Return the created postID
-	json.NewEncoder(w).Encode(map[string]int64{"post_id": postID})
+	json.NewEncoder(w).Encode(map[string]int64{"id": postID})
 }
 func (m *PostHandler) GetPostByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)       //Get variables from the request

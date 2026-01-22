@@ -33,14 +33,14 @@ const CreatePostPage = () => {
 			setLoading(true);
 			setError(null);
 
-			await createPost({
+			const resp = await createPost({
 				topic_id: parseInt(topicId, 10),
 				title: title,
 				content: content,
 				user_id: userId,
 			});
 
-			navigate(`/topics/${topicId}`);
+			navigate(`/topics/${topicId}/posts/${resp.id}`);
 		} catch (err) {
 			console.error(err);
 			setError("Failed to create post. Please try again.");
