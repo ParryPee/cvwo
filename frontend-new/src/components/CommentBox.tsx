@@ -24,6 +24,18 @@ const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [content, setContent] = useState(comment.content);
 	const [isReplying, setIsReplying] = useState(false);
+	const [likes, setLikes] = useState(comment.likes);
+
+	const handleLike = (id: number) => {
+		props.onLike(id);
+		if (comment.liked_by_user) {
+			setLikes(likes - 1);
+			comment.liked_by_user = false;
+		} else {
+			setLikes(likes + 1);
+			comment.liked_by_user = true;
+		}
+	};
 
 	const handleReplySubmit = (content: string) => {
 		onReply(content, comment.id);
@@ -105,7 +117,7 @@ const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
 							<Box mt={2}>
 								{!isDeleted && (
 									<Typography variant="caption">
-										{comment.likes || 0} Likes
+										{likes || 0} Likes
 									</Typography>
 								)}
 							</Box>
@@ -121,7 +133,7 @@ const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
 									}}
 								>
 									<IconButton
-										onClick={() => props.onLike(comment.id)}
+										onClick={() => handleLike(comment.id)}
 									>
 										{comment.liked_by_user ? (
 											<FavoriteIcon
