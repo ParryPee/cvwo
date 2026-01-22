@@ -29,12 +29,12 @@ const CreateTopicsPage = () => {
 		try {
 			setLoading(true);
 			setError(null);
-			await createTopic({
+			const resp =await createTopic({
 				title: title,
 				description: desc,
 				created_by: userId,
 			});
-			navigate(`/`);
+			navigate(`/topics/${resp.id}`);
 		} catch (err) {
 			console.error(err);
 			setError("Failed to create topic. Please try again.");
