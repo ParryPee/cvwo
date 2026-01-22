@@ -88,7 +88,7 @@ const CommentBox = ({ comment, onReply, ...props }: CommentProps) => {
 									color="text.secondary"
 								>
 									{isUpdated ? "Updated" : "Posted"} by •{" "}
-									{comment.created_by_username} •{" "}
+									{comment.username} •{" "}
 									{isUpdated
 										? timeAgo(comment.updated_at)
 										: timeAgo(comment.created_at)}{" "}
