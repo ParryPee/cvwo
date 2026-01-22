@@ -23,7 +23,7 @@ type Post struct { //Post Class, holds important attributes in our Post object
 
 	//Additional fields
 	TopicTitle        string `json:"topic_title"`
-	CreatedByUsername string `json:"created_by_username"`
+	CreatedByUsername string `json:"username"`
 	LikedByUser       bool   `json:"liked_by_user"`
 }
 

@@ -8,9 +8,9 @@ interface Topic {
     id: number;
     title: string;
     description: string;
-    user_id: number;
     created_at: string;
-    created_by_username: string;
+    user_id: number;
+    username: string;
     post_count: number;
 }
 
@@ -18,28 +18,28 @@ interface Post {
     id: number;
     title: string;
     content: string;
-    topic_id: number;
-    topic_title: string;
-    user_id: number;
     likes: number;
     created_at: string;
     updated_at: string;
-    created_by_username: string;
+    topic_id: number;
+    user_id: number;
+    topic_title: string;
+    username: string;
     liked_by_user: boolean;
 }
 
 interface Comment {
     id: number;
     content: string;
-    post_id: number;
-    user_id: number;
     likes: number;
-    parent_comment_id: {Int64: number, Valid: boolean};
     created_at: string;
     updated_at: string;
-    created_by_username: string;
-    liked_by_user: boolean;
+    post_id: number;
+    user_id: number;
     deleted: boolean;
+    parent_comment_id: {Int64: number, Valid: boolean};
+    liked_by_user: boolean;
+    username: string;
 }
 interface SearchResult {
     posts: Post[];

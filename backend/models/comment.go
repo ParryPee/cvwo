@@ -24,7 +24,7 @@ type Comment struct {
 	//Added field to indicate if the comment is liked by the user making the request
 	LikedByUser bool `json:"liked_by_user"`
 	//Username of the comment creator
-	CreatedByUsername string `json:"created_by_username"`
+	CreatedByUsername string `json:"username"`
 }
 
 // DB instance to make queries to

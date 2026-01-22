@@ -15,7 +15,7 @@ type Topic struct {
 	UserID int64 `json:"user_id"`
 
 	//Additional fields
-	CreatedByUsername string `json:"created_by_username"`
+	CreatedByUsername string `json:"username"`
 	PostCount         int64  `json:"post_count"`
 }
 

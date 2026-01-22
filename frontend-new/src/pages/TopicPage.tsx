@@ -204,7 +204,7 @@ const TopicPage = () => {
 									variant="caption"
 									color="text.secondary"
 								>
-									Posted by • {post.created_by_username} •{" "}
+									Posted by • {post.username} •{" "}
 									{timeAgo(post.created_at)} (on{" "}
 									{formatDate(post.created_at)})
 								</Typography>
