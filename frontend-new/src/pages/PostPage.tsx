@@ -22,7 +22,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CommentBox from "../components/CommentBox";
 import EditIcon from "@mui/icons-material/Edit";
-import EditPostModal from "../components/EditPostModal";
+import EditModal from "../components/EditModal";
 import { Link } from "@mui/material";
 import { buildCommentTree } from "../utils/commentTree";
 import type { CommentNode } from "../utils/commentTree";
@@ -366,7 +366,7 @@ const PostPage = () => {
 				)}
 			</Box>
 			{post && (
-				<EditPostModal
+				<EditModal
 					open={isEditModalOpen}
 					onClose={() => setIsEditModalOpen(false)}
 					onSubmit={handleUpdatePost}

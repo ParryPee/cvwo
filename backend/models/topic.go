@@ -12,7 +12,7 @@ type Topic struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 
-	UserID int64 `json:"created_by"`
+	UserID int64 `json:"user_id"`
 
 	//Additional fields
 	CreatedByUsername string `json:"created_by_username"`

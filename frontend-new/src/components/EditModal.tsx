@@ -17,7 +17,7 @@ interface EditPostModalProps {
 	initialContent: string;
 }
 
-const EditPostModal = ({
+const EditModal = ({
 	open,
 	onClose,
 	onSubmit,
@@ -109,4 +109,4 @@ const EditPostModal = ({
 	);
 };
 
-export default EditPostModal;
+export default EditModal;

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { fetchTopicById, fetchPostsByTopicId } from "../api/forum";
+import { fetchTopicById, fetchPostsByTopicId, updateTopic } from "../api/forum";
 import type { Topic, Post } from "../types/models";
 import { useAuth } from "../context/AuthContext";
 import { timeAgo, formatDate } from "../utils/date";
 import Box from "@mui/material/Box";
+import EditModal from "../components/EditModal";
 import {
 	Container,
 	CircularProgress,
@@ -14,8 +15,9 @@ import {
 	Alert,
 	Button,
 	Divider,
+	IconButton,
 } from "@mui/material";
-
+import EditIcon from "@mui/icons-material/Edit";
 const TopicPage = () => {
 	const navigate = useNavigate();
 	const { topicId } = useParams<{ topicId: string }>();
@@ -23,8 +25,21 @@ const TopicPage = () => {
 	const [loading, setLoading] = useState(true);
 	const [posts, setPosts] = useState<Post[]>([]);
 	const [error, setError] = useState<string | null>(null);
-	const { isAuthenticated } = useAuth();
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const { isAuthenticated, user } = useAuth();
 
+	const handleUpdateTopic = async (title: string, description: string) => {
+		if (!topic) return;
+		try {
+			await updateTopic(topic.id, { title, description });
+			setTopic({ ...topic, title, description });
+			setIsEditModalOpen(false);
+		} catch (error) {
+			console.error("Failed to update topic:", error);
+		}
+	};
+
+	console.log(topic);
 	useEffect(() => {
 		const loadTopicAndPosts = async () => {
 			if (!topicId) return;
@@ -96,6 +111,23 @@ const TopicPage = () => {
 				>
 					{topic.description}
 				</Typography>
+				<Box
+					sx={{
+						display: "flex",
+						justifyContent: "flex-end",
+					}}
+				>
+					{isAuthenticated && user?.id === topic.user_id && (
+						<IconButton onClick={() => setIsEditModalOpen(true)}>
+							<EditIcon
+								sx={{
+									cursor: "pointer",
+									":hover": { color: "blue" },
+								}}
+							/>
+						</IconButton>
+					)}
+				</Box>
 			</Box>
 
 			<Box mt={4} sx={{ maxWidth: "960px", margin: "0 auto", mt: 4 }}>
@@ -182,6 +214,15 @@ const TopicPage = () => {
 					))
 				)}
 			</Box>
+			{topic && (
+				<EditModal
+					open={isEditModalOpen}
+					onClose={() => setIsEditModalOpen(false)}
+					onSubmit={handleUpdateTopic}
+					initialTitle={topic.title}
+					initialContent={topic.description}
+				/>
+			)}
 		</Container>
 	);
 };

@@ -71,3 +71,6 @@ export const fetchAllPosts = async(limit?: number, offset?:number): Promise<Post
     const response = await client.get<Post[]>(`posts?size=${limit}&offset=${offset}`);
     return response.data
 }
+export const updateTopic = async(topicID: number, data: {title: string, description: string}): Promise<void>=>{
+    await client.put(`topics/${topicID}`, data)
+}
