@@ -10,9 +10,11 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
+import { CircularProgress } from "@mui/material";
 
 const ExploreTopicsPage = () => {
 	const [topics, setTopics] = useState<Topic[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		const loadTopics = async () => {
@@ -22,11 +24,21 @@ const ExploreTopicsPage = () => {
 				setTopics(data);
 			} catch (error) {
 				console.error("Failed to fetch topics", error);
+			} finally {
+				setIsLoading(false);
 			}
 		};
 		loadTopics();
 	}, []);
-
+	if (isLoading) {
+		return (
+			<Container
+				sx={{ mt: 8, display: "flex", justifyContent: "center" }}
+			>
+				<CircularProgress />
+			</Container>
+		);
+	}
 	return (
 		<Container maxWidth="lg" sx={{ mt: 4 }}>
 			<Typography variant="h4" component="h1" gutterBottom>
