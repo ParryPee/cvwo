@@ -375,45 +375,49 @@ const HomePage = () => {
 										Top Communities
 									</Typography>
 									{data.topics
-										.sort(
-											(a, b) =>
-												b.post_count - a.post_count,
-										)
-										.slice(0, 3)
-										.map((topic) => (
-											<CardActionArea
-												key={topic.id}
-												sx={{
-													mb: 2,
-													cursor: "pointer",
-													bgcolor:
-														"var(--color-platinum-100)",
-													p: 2,
-													borderRadius: 2,
-												}}
-												onClick={() =>
-													navigate(
-														`/topics/${topic.id}`,
-													)
-												}
-											>
-												<Typography
-													variant="subtitle1"
-													fontWeight="bold"
-													noWrap
-												>
-													{topic.title}
-												</Typography>
-												<Typography
-													variant="caption"
-													color="text.secondary"
-													noWrap
-													display="block"
-												>
-													{topic.post_count} posts
-												</Typography>
-											</CardActionArea>
-										))}
+										? data.topics
+												.sort(
+													(a, b) =>
+														b.post_count -
+														a.post_count,
+												)
+												.slice(0, 3)
+												.map((topic) => (
+													<CardActionArea
+														key={topic.id}
+														sx={{
+															mb: 2,
+															cursor: "pointer",
+															bgcolor:
+																"var(--color-platinum-100)",
+															p: 2,
+															borderRadius: 2,
+														}}
+														onClick={() =>
+															navigate(
+																`/topics/${topic.id}`,
+															)
+														}
+													>
+														<Typography
+															variant="subtitle1"
+															fontWeight="bold"
+															noWrap
+														>
+															{topic.title}
+														</Typography>
+														<Typography
+															variant="caption"
+															color="text.secondary"
+															noWrap
+															display="block"
+														>
+															{topic.post_count}{" "}
+															posts
+														</Typography>
+													</CardActionArea>
+												))
+										: null}
 								</Paper>
 							</Box>
 						) : null}

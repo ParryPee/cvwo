@@ -44,6 +44,11 @@ const ExploreTopicsPage = () => {
 			<Typography variant="h4" component="h1" gutterBottom>
 				Explore Topics
 			</Typography>
+			{topics.length === 0 && (
+				<Typography variant="body1">
+					No topics yet. Start one now!
+				</Typography>
+			)}
 			<Grid container spacing={3}>
 				{topics.map((topic) => (
 					<Grid
