@@ -106,7 +106,7 @@ Ensure you have MySQL installed and running.
 | Tool Used | Purpose |
 | :--- | :--- |
 | **Gemini** | Used AI to learn about Tailwind utility classes. |
-| **Gemini** | Used AI to learn the different modes for full-text search in MySQL. |
+| **Gemini** | Used AI to learn about the differences between the full-text search modes. |
 
 
 ---
