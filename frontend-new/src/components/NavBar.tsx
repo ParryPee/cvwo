@@ -14,7 +14,7 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
+import Logo from "../../logo.png";
 
 const pages = [
 	{ name: "Home", link: "/" },
@@ -65,6 +65,15 @@ function ResponsiveAppBar() {
 		<AppBar position="static">
 			<Container maxWidth={false} className="bg-lavender-grey-700">
 				<Toolbar disableGutters>
+					<img
+						src={Logo}
+						alt="CVWO Logo"
+						style={{
+							width: "auto",
+							marginRight: "10px",
+							maxWidth: "100px",
+						}}
+					/>
 					<Typography
 						variant="h6"
 						noWrap
@@ -129,10 +138,6 @@ function ResponsiveAppBar() {
 							))}
 						</Menu>
 					</Box>
-
-					<AdbIcon
-						sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
-					/>
 					<Typography
 						variant="h5"
 						noWrap
